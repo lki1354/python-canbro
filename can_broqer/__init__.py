@@ -1,4 +1,4 @@
-from .bus_network import BusNetwork
-from .bus_node import BusNode
+from .network import Network
+from .node import Node
 
-__all__ = ['BusNetwork', 'BusNode']
+__all__ = ['Network', 'Node']
