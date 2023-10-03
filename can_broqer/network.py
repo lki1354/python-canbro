@@ -25,7 +25,7 @@ class Network:
         return self.__dict__[name]
     
     @property
-    def nodes(self) -> list[BusNode]:
+    def nodes(self) -> list[Node]:
         """Get all nodes"""
         nodes=[]
         for node in self._database.nodes:
