@@ -1,6 +1,6 @@
 import can
 from cantools.database import Database
-from broqer import Value
+from broqer import Value, op
 
 
 class Signal(Value):
@@ -9,8 +9,8 @@ class Signal(Value):
         self._metadata = metadata
 
 
-class Message(Value): UserDict
-    def __init__(self, metadata, sender, init=...):
+class Message(Value):
+    def __init__(self, metadata:Database, sender:bool, init=...):
         super().__init__(init)
         self._metadata = metadata
         self.is_sender = sender
@@ -24,13 +24,37 @@ class Message(Value): UserDict
                 setattr(self, "set_"+signal.name, lambda self,value:  print("is a resiver signal and can not be set!") ) 
             setattr(self, signal.name ,property(fget=self._get_signal, fset=self._set_signal) )
             self.__dict__["_signal_"+signal.name].notify(signal.initial)
-            self.__dict__["_signal_"+signal.name].subscribe(self._on_signal_change)
+            self.__dict__["_signal_"+signal.name].subscribe(self._update_can_message)
+        if self._metadata.cycle_time:
+            self._periodic_publisher = self | op.Throttle(self._metadata.cycle_time / 1000.0)
 
-    def _update_can_message(self):
+
+    def start_periodic(self):
+        if self._metadata.cycle_time:
+            self._periodic_publisher.subscribe(self.notify)
+            self.running = True
+        else:
+            print("is not a periodic message")
+
+    def stop_periodic(self):
+        if self._metadata.cycle_time:
+            self._periodic_publisher.unsubscribe(self.notify)
+            self.running = False
+        else:
+            print("is not a periodic message")
+
+    def _get_signals(self) -> dict: 
+        data = dict()
+        for signal in self._metadata._signals:
+            data[signal] = self.__dict__["_signal_"+signal.name].get()
+
+        return data
+
+    def _update_can_message(self,value) -> None:
         arbitration_id = self._metadata.frame_id
         extended_id = self._metadata.is_extended_frame
-        self.data = 
-        pruned_data = self._metadata.gather_signals(self.data)
+        data = self._get_signals()
+        pruned_data = self._metadata.gather_signals(data)
         data = self._metadata.encode(pruned_data,
                                     self._metadata.scaling,
                                     self._metadata.padding)
@@ -40,7 +64,7 @@ class Message(Value): UserDict
     def send_periodic_start(self):
         if not self.enabled:
             return
-
+        
         self._periodic_task = self._can_bus.send_periodic(
             self._can_message,
             self._metadata.cycle_time / 1000.0)
