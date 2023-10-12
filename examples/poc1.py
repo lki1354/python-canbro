@@ -1,6 +1,6 @@
-import can_broqer
+import canbro
 
-Tester = can_broqer.Tester()
-control_unit = can_broqer.VCU()
+Tester = canbro.Tester()
+control_unit = canbro.VCU()
 
 
