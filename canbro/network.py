@@ -35,7 +35,7 @@ class Network:
 
 
 class NodeListener(can.Listener):
-    def __init__(self, network: BusNetwork):
+    def __init__(self, network: Network):
         self._network = network
 
     def on_message_received(self, msg: can.Message):

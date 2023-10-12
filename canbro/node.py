@@ -1,7 +1,8 @@
 import can
 from cantools.database import Database
-from broqer import Value, op
-
+from broqer import Value, op, Sink
+import logging
+import types
 
 class Signal(Value):
     def __init__(self, metadata,init=...):
@@ -17,14 +18,16 @@ class Message(Value):
         for signal in metadata._signals:
             setattr(self, "_signal_"+signal.name, Signal(signal) )
             if sender:
-                setattr(self, "set_"+signal.name, lambda self,value: self.__dict__["_signal_"+signal.name].notify(value) )
-                setattr(self, "get_"+signal.name, lambda self:  print("is a sender signal and can not be get!") ) 
+                setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value: self.__dict__["_signal_"+signal.name].notify(value),self) )
+                self.__dict__["_signal_"+signal.name].notify(signal.initial)
+                setattr(self, "_get_"+signal.name, types.MethodType(lambda self:  logging.debug("is a sender signal and can not be get!") ,self) )
+                self.__dict__["_signal_"+signal.name].subscribe(Sink( logging.debug ))
             else:
-                setattr(self, "get_"+signal.name, lambda self: self.__dict__["_signal_"+signal.name].get() )
-                setattr(self, "set_"+signal.name, lambda self,value:  print("is a resiver signal and can not be set!") ) 
-            setattr(self, signal.name ,property(fget=self._get_signal, fset=self._set_signal) )
-            self.__dict__["_signal_"+signal.name].notify(signal.initial)
-            self.__dict__["_signal_"+signal.name].subscribe(self._update_can_message)
+                setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self ) )
+                self.__dict__["_signal_"+signal.name].subscribe(Sink(self._update_can_message))
+                setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.debug("is a resiver signal and can not be set! value={}".format(value)),self ) ) 
+            self.__dict__[ signal.name ] = property(fget=self.__dict__["_get_"+signal.name], fset=self.__dict__["_set_"+signal.name],  doc="The signal property." )
+            
         if self._metadata.cycle_time:
             self._periodic_publisher = self | op.Throttle(self._metadata.cycle_time / 1000.0)
 
@@ -51,6 +54,8 @@ class Message(Value):
         return data
 
     def _update_can_message(self,value) -> None:
+        logging.debug('Update CAN message callback: %s', self._metadata._name)
+        return None
         arbitration_id = self._metadata.frame_id
         extended_id = self._metadata.is_extended_frame
         data = self._get_signals()
@@ -72,8 +77,10 @@ class Message(Value):
 
 def _create_signal_values(object:object, database:Database, node_name:str=None) -> None:
     """Create Value instances for all signals in object"""
+    logging.debug('Create signal values for %s', object)
     for message in database._messages:
         if node_name in message.senders:
+            logging.debug('Create sender message %s', message._name)
             setattr(object, message._name, Message(message, True) )
         else:
             for signal in message._signals:
@@ -81,6 +88,7 @@ def _create_signal_values(object:object, database:Database, node_name:str=None) 
                 if node_name in signal.receivers:
                     is_in_node_as_reveiver = True
             if is_in_node_as_reveiver:
+                logging.debug('Create receiver message %s', message._name)
                 setattr(object, message._name, Message(message, False) )
                 
 
