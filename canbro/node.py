@@ -65,7 +65,8 @@ class Message(Value):
                                     self._metadata.padding)
         self._can_message = can.Message(arbitration_id=arbitration_id,
                                         is_extended_id=extended_id,
-                                        data=data)        
+                                        data=data)
+                
     def send_periodic_start(self):
         if not self.enabled:
             return
@@ -102,3 +103,6 @@ class Node:
     def _on_message(self, message:can.Message) -> None:
         """Callback for received CAN messages"""
         print(message)
+    def _send_message(self, message:can.Message) -> None:
+        """Callback for received CAN messages"""
+        self._bus.send(message)
