@@ -30,14 +30,14 @@ class Message(Value):
 
 
     def start_periodic(self):
-        if self._metadata.cycle_time:
+        if self._periodic_publisher:
             self._periodic_publisher.subscribe(self.notify)
             self.running = True
         else:
             print("is not a periodic message")
 
     def stop_periodic(self):
-        if self._metadata.cycle_time:
+        if self._periodic_publisher:
             self._periodic_publisher.unsubscribe(self.notify)
             self.running = False
         else:
