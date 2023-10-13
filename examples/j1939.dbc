@@ -39,7 +39,6 @@ BU_: Node2 Node1
 BO_ 2503213569 Message1: 8 Node1
  SG_ Signal1 : 0|8@1- (1,0) [0|0] ""  Node2
 
-
 BO_ 2515537922 Message2: 8 Node2
  SG_ Signal2 : 0|8@1- (1,0) [0|0] ""  Node1
 
@@ -115,4 +114,7 @@ BA_ "DBName" "foo";
 BA_ "NmStationAddress" BU_ Node2 2;
 BA_ "NmStationAddress" BU_ Node1 1;
 BA_ "VFrameFormat" BO_ 2503213569 3;
+BA_ "GenMsgCycleTime" BO_ 2515537922 100;
+BA_ "VFrameFormat" BO_ 2515537922 3;
 BA_ "SPN" SG_ 2503213569 Signal1 500;
+
