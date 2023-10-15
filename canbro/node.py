@@ -5,6 +5,8 @@ import logging
 import types
 import asyncio
 
+
+
 class Signal(Value):
     def __init__(self, metadata):
         super().__init__()
@@ -40,8 +42,6 @@ class Message(Value):
                 self._transmitter = transmitter
             else:
                 logging.ERROR("no transmitter function given for a sender message")    
-
-
 
     def start_periodic(self):
         if self._metadata.cycle_time:
@@ -89,6 +89,11 @@ class Message(Value):
         self.notify(self._can_message)
         if self._periodic_task is not None:
             self._periodic_task.modify_data(self._can_message)
+    def _update_signals(self,signals:dict) -> None:
+        logging.debug('Update signals: %s', self._metadata._name)
+        for signal_name, signal_value in signals.items():
+            self.__dict__["_signal_"+signal_name].notify(signal_value)
+
                 
     def _send_msg(self,value) -> None:
         logging.debug('Send CAN message: %s', self._metadata._name)
@@ -117,6 +122,9 @@ class Node:
     def __init__(self, name:str, bus:can.BusABC, database:Database) -> None:
         self._name = name
         self._bus = bus
+        self._database = database
+        listener = NodeListener(self)
+        self._notifier = can.Notifier(self._bus, [listener])
         _create_signal_values(self, database, name)
         
     def _on_message(self, message:can.Message) -> None:
@@ -126,3 +134,25 @@ class Node:
         """Callback for received CAN messages"""
         logging.debug('Send CAN message from Node %s: %s', self._name,message)
         self._bus.send(message)
+
+
+class NodeListener(can.Listener):
+    def __init__(self, node: Node) -> None:
+        self._node = node
+
+    def on_message_received(self, msg: can.Message):
+        if msg.is_error_frame or msg.is_remote_frame: # or msg.is_fd: #todo what is 
+            # rtr is currently not supported
+            return
+
+        try:
+            database_message = self._node._database.get_message_by_frame_id(
+                msg.arbitration_id)
+        except KeyError:
+            logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
+            return
+        try:
+            data_decoded = database_message.decode(msg.data)
+        except ValueError:
+            logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
+        self._node.__dict__[database_message._name]._update_signals(data_decoded)
