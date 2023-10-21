@@ -17,7 +17,8 @@ class Node:
     def __create_signal_values(self, database:Database, node_name:str=None) -> None:
         """Create Value instances for all signals in object"""
         logging.debug('Create signal values for %s', self)
-        for message in database._messages:
+        for message in database.messages:
+            logging.debug(message.senders)
             if node_name in message.senders:
                 logging.debug('Create sender message %s', message._name)
                 setattr(self, message._name, create_message(message, True, self._bus ) )
@@ -47,7 +48,6 @@ class NodeListener(can.Listener):
         if msg.is_error_frame or msg.is_remote_frame: # or msg.is_fd: #todo what is 
             # rtr is currently not supported
             return
-
         try:
             database_message = self._node._database.get_message_by_frame_id(
                 msg.arbitration_id)
@@ -55,7 +55,6 @@ class NodeListener(can.Listener):
             logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
             return
         try:
-            data_decoded = database_message.decode(msg.data)
-        except ValueError:
-            logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
-        self._node.__dict__[database_message._name]._update_signals(data_decoded)
+            self._node.__dict__[database_message._name]._update_data(msg)
+        except:
+            logging.ERROR('Received message with arbitration id {} and is not a instance of this node. '.format( msg.arbitration_id ) )

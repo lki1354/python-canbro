@@ -1,0 +1,309 @@
+VERSION "HIPFNNNYNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN/4/%%%/4/'%**4NNN///"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: ECU CONTROL
+VAL_TABLE_ first_error_actual 3 "other_error" 2 "lowside_voltage" 1 "lowside_overcurrent" 0 "no error" ;
+VAL_TABLE_ operation_mode 7 "unused" 6 "unused" 5 "unused" 4 "Active Discharge" 3 "Pre-charge" 2 "Boost" 1 "Buck" 0 "Standby" ;
+
+
+BO_ 4 STATUS: 8 ECU
+ SG_ c_state : 40|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ temp : 56|8@1+ (1,-40) [-40|140] "°C"  CONTROL
+ SG_ STATUS_SNC : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ STATUS_CRC : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ value_pca : 26|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ value_ppc : 24|2@1+ (1,0) [0|3] ""  CONTROL
+ SG_ error : 16|2@1+ (1,0) [0|3] ""  CONTROL
+ SG_ operation_mode_actual : 32|3@1+ (1,0) [0|0] ""  CONTROL
+
+BO_ 3 MEASURE: 8 ECU
+ SG_ lv_plaus : 12|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ MEASURE_CRC : 0|8@1+ (1,0) [0|255] ""  CONTROL
+ SG_ MEASURE_SNC : 8|4@1+ (1,0) [0|15] ""  CONTROL
+ SG_ li_act : 16|10@1+ (1,-400) [-400|400] "A"  CONTROL
+ SG_ hi_act : 32|8@1+ (0.2,-25) [-25|25] "A"  CONTROL
+ SG_ lv_act : 56|8@1+ (0.1,0) [0|25] "V"  CONTROL
+ SG_ hv_act : 40|10@1+ (1,0) [0|550] "V"  CONTROL
+
+BO_ 2 DEM: 8 CONTROL
+ SG_ DEM_SNC : 8|4@1+ (1,0) [0|15] ""  ECU
+ SG_ DEM_CRC : 0|8@1+ (1,0) [0|255] ""  ECU
+ SG_ li_set : 16|8@1+ (1,0) [0|100] "A"  ECU
+ SG_ hv_set : 48|8@1+ (1,220) [220|470] "V"  ECU
+ SG_ lv_set : 56|8@1+ (0.1,0) [8|16] "V"  ECU
+ SG_ operation_mode : 12|3@1+ (1,0) [0|15] ""  CONTROL,ECU
+
+BO_ 5 NM_Control_MSG: 8 CONTROL
+ SG_ NM_PNI_Control : 14|1@1+ (1,0) [0|1] ""  ECU
+ SG_ NM_CSR_Control : 11|1@1+ (1,0) [0|1] ""  ECU
+ SG_ NM_AW_Control : 12|1@1+ (1,0) [0|1] ""  ECU
+ SG_ NM_RMR_Control : 8|1@1+ (1,0) [0|1] ""  ECU
+ SG_ NM_NodeID_Control : 0|8@1+ (1,0) [0|255] ""  ECU
+
+
+
+CM_ SG_ 4 c_state "0x0: If KL30C voltage<5v , s_DCDC_HVK_Error _SD = Open
+0x1: if KL30C voltage>=6v , s_DCDC_HVK_Error _SD = Closed ";
+CM_ SG_ 4 STATUS_SNC "Sequence Number Counter can be used by a receiver to detect situations where the transmitting ECU malfunction repeats the same frame all the time. The message counter will be increased by 1 for every transmission up to 15 and then restart at 0.";
+CM_ SG_ 4 STATUS_CRC "The CRC is based on the generator polynomial 97h (AUTOSAR E2E Profile 2) with a hamming distance of 4 for up to 119 bits. (Length: 8 bits; Polynomial: x^8+x^5+x^3+x^2+x+1; Initial Value: FFh; XOR Value: FFh; Input/Result Data Reflection: Not reflected)";
+CM_ SG_ 4 value_pca "0 = peak current is not available
+1 = peak current is available";
+CM_ SG_ 3 lv_plaus "A boolean value to indicate the plausibility of lowside voltage";
+CM_ SG_ 3 MEASURE_CRC "The CRC is based on the generator polynomial 97h (AUTOSAR E2E Profile 2) with a hamming distance of 4 for up to 119 bits. (Length: 8 bits; Polynomial: x^8+x^5+x^3+x^2+x+1; Initial Value: FFh; XOR Value: FFh; Input/Result Data Reflection: Not reflected)";
+CM_ SG_ 3 MEASURE_SNC "Sequence Number Counter can be used by a receiver to detect situations where the transmitting ECU malfunction repeats the same frame all the time. The message counter will be increased by 1 for every transmission up to 15 and then restart at 0.";
+CM_ SG_ 3 li_act "LV actual current";
+CM_ SG_ 3 hi_act "HV actual current";
+CM_ SG_ 3 lv_act "LV actual voltage";
+CM_ SG_ 3 hv_act "HV actual voltage";
+CM_ SG_ 2 DEM_SNC "Sequence Number Counter can be used by a receiver to detect situations where the transmitting ECU malfunction repeats the same frame all the time. The message counter will be increased by 1 for every transmission up to 15 and then restart at 0.";
+CM_ SG_ 2 DEM_CRC "The CRC is based on the generator polynomial 97h (AUTOSAR E2E Profile 2) with a hamming distance of 4 for up to 119 bits. (Length: 8 bits; Polynomial: x^8+x^5+x^3+x^2+x+1; Initial Value: FFh; XOR Value: FFh; Input/Result Data Reflection: Not reflected)";
+CM_ SG_ 2 li_set "LV current command";
+CM_ SG_ 2 hv_set "HV voltage command";
+CM_ SG_ 2 lv_set "LV voltage command";
+CM_ SG_ 5 NM_PNI_Control "Partial Network Information Bit";
+CM_ SG_ 5 NM_CSR_Control "NM Coordinator Sleep Ready Bit";
+CM_ SG_ 5 NM_AW_Control "Active Wakeup Bit";
+CM_ SG_ 5 NM_RMR_Control "Repeat Message Request";
+CM_ SG_ 5 NM_NodeID_Control "Source Node Identifier";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","NotUsed","NotUsed","NoSigSendType";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ SG_  "GenSigActiveRepetitions" INT -2147483648 2147483647;
+BA_DEF_ SG_  "GenSigFuncType" ENUM  "NoFunction","MsgCounter","CRC-8","XOR","XOR-2","DatedBit","SW-Kl15","CHK","Constant","Protocol","CRC-8-SAE_J1850","CRC-32","DataLength","DataID","MsgCounter16","SDK-Signatur","Cluster";
+BA_DEF_ SG_  "GenSigMissingSourceValue" HEX 0 4294967295;
+BA_DEF_ SG_  "GenSigSwitchedByIgnition" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigTimeoutValue" INT 0 1000000000;
+BA_DEF_ SG_  "NWMWakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "Fehlerwert" HEX 0 2147483647;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NoMsgSendType";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgCycleTimeActive" INT 0 0;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_ BO_  "GenMsgChkConstant" HEX 0 4095;
+BA_DEF_ BO_  "GenMsgPDUConstants" STRING ;
+BA_DEF_ BO_  "MsgType" ENUM  "Application","NM ","NMH","TP2.0","ISO-TP ","BAP","EID","KS";
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_ BO_  "NmAsrMessage" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmStationAddress" HEX 0 255;
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmCAN" INT 0 2;
+BA_DEF_ BU_  "DiagStationAddress" HEX 0 255;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "GenNodAutoGenDsp" ENUM  "No","Yes";
+BA_DEF_ BU_  "GenNodAutoGenSnd" ENUM  "No","Yes";
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "ECUVariantDefault" ENUM  "No","Yes";
+BA_DEF_ BU_  "ECUVariantGroup" STRING ;
+BA_DEF_ BU_  "SamplePointMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "SamplePointMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "SyncJumpWidthMin" INT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthMax" INT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthCANFDMin" FLOAT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthCANFDMax" FLOAT 0 50;
+BA_DEF_ BU_  "SamplePointCANFDMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "SamplePointCANFDMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "SSPOffsetCANFDMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "SSPOffsetCANFDMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "TimeQuantaMin" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaMax" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaCANFDMin" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaCANFDMax" INT 4 257;
+BA_DEF_ BU_  "NmAsrNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmAsrCanMsgCycleOffset" INT 0 65535;
+BA_DEF_ BU_  "NmAsrCanMsgReducedTime" INT 0 65535;
+BA_DEF_ BU_  "NmAsrNodeIdentifier" INT 0 255;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "BusSpeed" STRING ;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "NmAsrMessageCount" INT 0 255;
+BA_DEF_  "NmAsrBaseAddress" HEX 1280 1343;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "GenNWMApBusSleep" STRING ;
+BA_DEF_  "GenNWMApCanNormal" STRING ;
+BA_DEF_  "GenNWMApCanOff" STRING ;
+BA_DEF_  "GenNWMApCanOn" STRING ;
+BA_DEF_  "GenNWMApCanSleep" STRING ;
+BA_DEF_  "GenNWMApCanWakeUp" STRING ;
+BA_DEF_  "GenNWMGotoMode_Awake" STRING ;
+BA_DEF_  "GenNWMGotoMode_BusSleep" STRING ;
+BA_DEF_  "GenNWMSleepTime" INT 0 1000000;
+BA_DEF_  "GenNWMTalkNM" STRING ;
+BA_DEF_  "VersionDay" INT 1 31;
+BA_DEF_  "VersionMonth" INT 1 12;
+BA_DEF_  "VersionWeek" INT 1 52;
+BA_DEF_  "VersionYear" INT 0 99;
+BA_DEF_  "VersionNumber" INT 0 65535;
+BA_DEF_  "Baudrate" INT 1 1000000;
+BA_DEF_  "BaudrateCANFD" INT 1 16000000;
+BA_DEF_  "NmAsrCanMsgCycleTime" INT 0 65535;
+BA_DEF_  "NmAsrRepeatMessageTime" INT 0 65535;
+BA_DEF_  "NmAsrTimeoutTime" INT 0 65535;
+BA_DEF_  "NmAsrWaitBusSleepTime" INT 0 65535;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_REL_ BU_SG_REL_  "GenSigTimeoutTime" INT 0 65535;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigActiveRepetitions" 0;
+BA_DEF_DEF_  "GenSigFuncType" "NoFunction";
+BA_DEF_DEF_  "GenSigMissingSourceValue" 0;
+BA_DEF_DEF_  "GenSigSwitchedByIgnition" "No";
+BA_DEF_DEF_  "GenSigTimeoutValue" 0;
+BA_DEF_DEF_  "NWMWakeupAllowed" "No";
+BA_DEF_DEF_  "Fehlerwert" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeActive" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgChkConstant" 0;
+BA_DEF_DEF_  "GenMsgPDUConstants" "";
+BA_DEF_DEF_  "MsgType" "Application";
+BA_DEF_DEF_  "CANFD_BRS" "1";
+BA_DEF_DEF_  "VFrameFormat" "StandardCAN";
+BA_DEF_DEF_  "NmAsrMessage" "No";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmCAN" 0;
+BA_DEF_DEF_  "DiagStationAddress" 0;
+BA_DEF_DEF_  "ILUsed" "Yes";
+BA_DEF_DEF_  "NodeLayerModules" "oseknm01.dll,osek_tp.dll,CANoeILNLVector.dll";
+BA_DEF_DEF_  "GenNodAutoGenDsp" "Yes";
+BA_DEF_DEF_  "GenNodAutoGenSnd" "Yes";
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "ECUVariantDefault" "Yes";
+BA_DEF_DEF_  "ECUVariantGroup" "";
+BA_DEF_DEF_  "SamplePointMin" 75;
+BA_DEF_DEF_  "SamplePointMax" 75;
+BA_DEF_DEF_  "SyncJumpWidthMin" 50;
+BA_DEF_DEF_  "SyncJumpWidthMax" 50;
+BA_DEF_DEF_  "SyncJumpWidthCANFDMin" 50;
+BA_DEF_DEF_  "SyncJumpWidthCANFDMax" 50;
+BA_DEF_DEF_  "SamplePointCANFDMin" 75;
+BA_DEF_DEF_  "SamplePointCANFDMax" 75;
+BA_DEF_DEF_  "SSPOffsetCANFDMin" 75;
+BA_DEF_DEF_  "SSPOffsetCANFDMax" 75;
+BA_DEF_DEF_  "TimeQuantaMin" 160;
+BA_DEF_DEF_  "TimeQuantaMax" 160;
+BA_DEF_DEF_  "TimeQuantaCANFDMin" 40;
+BA_DEF_DEF_  "TimeQuantaCANFDMax" 40;
+BA_DEF_DEF_  "NmAsrNode" "Yes";
+BA_DEF_DEF_  "NmAsrCanMsgCycleOffset" 100;
+BA_DEF_DEF_  "NmAsrCanMsgReducedTime" 500;
+BA_DEF_DEF_  "NmAsrNodeIdentifier" 0;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "BusSpeed" "500k";
+BA_DEF_DEF_  "NmType" "NmAsr";
+BA_DEF_DEF_  "NmAsrMessageCount" 64;
+BA_DEF_DEF_  "NmAsrBaseAddress" 1280;
+BA_DEF_DEF_  "Manufacturer" "BRUSA";
+BA_DEF_DEF_  "GenNWMApBusSleep" "";
+BA_DEF_DEF_  "GenNWMApCanNormal" "";
+BA_DEF_DEF_  "GenNWMApCanOff" "";
+BA_DEF_DEF_  "GenNWMApCanOn" "";
+BA_DEF_DEF_  "GenNWMApCanSleep" "";
+BA_DEF_DEF_  "GenNWMApCanWakeUp" "";
+BA_DEF_DEF_  "GenNWMGotoMode_Awake" "";
+BA_DEF_DEF_  "GenNWMGotoMode_BusSleep" "";
+BA_DEF_DEF_  "GenNWMSleepTime" 0;
+BA_DEF_DEF_  "GenNWMTalkNM" "";
+BA_DEF_DEF_  "VersionDay" 1;
+BA_DEF_DEF_  "VersionMonth" 9;
+BA_DEF_DEF_  "VersionWeek" 35;
+BA_DEF_DEF_  "VersionYear" 17;
+BA_DEF_DEF_  "VersionNumber" 0;
+BA_DEF_DEF_  "Baudrate" 500000;
+BA_DEF_DEF_  "BaudrateCANFD" 2000000;
+BA_DEF_DEF_  "NmAsrCanMsgCycleTime" 1000;
+BA_DEF_DEF_  "NmAsrRepeatMessageTime" 1000;
+BA_DEF_DEF_  "NmAsrTimeoutTime" 3000;
+BA_DEF_DEF_  "NmAsrWaitBusSleepTime" 4000;
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_REL_ "GenSigTimeoutTime" 0;
+BA_ "Manufacturer" "test";
+BA_ "BusType" "CAN";
+BA_ "DBName" "VehicleCan";
+BA_ "GenMsgCycleTime" BO_ 4 100;
+BA_ "GenMsgCycleTime" BO_ 3 100;
+BA_ "GenMsgCycleTime" BO_ 2 100;
+BA_ "NmAsrMessage" BO_ 5 1;
+BA_ "MsgType" BO_ 5 1;
+BA_ "NmMessage" BO_ 5 1;
+BA_ "GenMsgSendType" BO_ 5 8;
+BA_ "GenMsgCycleTime" BO_ 5 100;
+BA_ "GenSigStartValue" SG_ 4 c_state 3;
+BA_ "GenSigFuncType" SG_ 4 STATUS_SNC 1;
+BA_ "GenSigFuncType" SG_ 4 STATUS_CRC 2;
+BA_ "GenSigStartValue" SG_ 4 STATUS_CRC 255;
+BA_ "GenSigFuncType" SG_ 3 MEASURE_CRC 2;
+BA_ "GenSigStartValue" SG_ 3 MEASURE_CRC 255;
+BA_ "GenSigFuncType" SG_ 3 MEASURE_SNC 1;
+BA_ "GenSigStartValue" SG_ 2 DEM_SNC 1;
+BA_ "GenSigFuncType" SG_ 2 DEM_SNC 1;
+BA_ "GenSigFuncType" SG_ 2 DEM_CRC 2;
+BA_ "GenSigStartValue" SG_ 2 DEM_CRC 255;
+BA_ "GenSigStartValue" SG_ 2 li_set 1;
+BA_ "GenSigStartValue" SG_ 2 hv_set 1;
+BA_ "GenSigStartValue" SG_ 2 lv_set 130;
+BA_ "GenSigSendType" SG_ 5 NM_PNI_Control 7;
+BA_ "GenSigSendType" SG_ 5 NM_CSR_Control 7;
+BA_ "GenSigSendType" SG_ 5 NM_AW_Control 7;
+BA_ "GenSigSendType" SG_ 5 NM_RMR_Control 7;
+BA_ "GenSigSendType" SG_ 5 NM_NodeID_Control 7;
+VAL_ 4 value_ppc 3 "Voltage Derating" 2 "Temperature Derating" 1 "2.8kW" 0 "3.5kW" ;
+VAL_ 4 error 3 "other_error" 2 "lowside_voltage" 1 "lowside_overcurrent" 0 "no error" ;
+VAL_ 4 operation_mode_actual 7 "reserved" 6 "reserved" 5 "Error" 4 "Active Discharge" 3 "Pre-charge" 2 "Boost" 1 "Buck" 0 "Standby" ;
+VAL_ 2 operation_mode 7 "unused" 6 "unused" 5 "unused" 4 "Active Discharge" 3 "Pre-charge" 2 "Boost" 1 "Buck" 0 "Standby" ;
+SIG_GROUP_ 4 BSC7_STATUS_Signal_Group 1 : c_state temp STATUS_SNC STATUS_CRC value_pca value_ppc error operation_mode_actual;
+SIG_GROUP_ 3 BSC7_MEASURE_Signal_Group 1 : lv_plaus MEASURE_CRC MEASURE_SNC li_act hi_act lv_act hv_act;
+SIG_GROUP_ 2 BSC7DEM_Signal_Group 1 : DEM_SNC DEM_CRC li_set hv_set lv_set operation_mode;
+
