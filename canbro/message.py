@@ -1,13 +1,13 @@
 import can
 from cantools import database  
 from cantools.autosar import compute_profile2_crc
-from cantools.database.can.formats.arxml import AutosarEnd2EndProperties
+from .e2e import E2E
 from broqer import Value, op, Sink
 import logging
 import types
 import asyncio
 import datetime
-
+import ast
 
 
 class Signal(Value):
@@ -28,7 +28,7 @@ class Message(Value):
         super().__init__()
         self._metadata = metadata
         if data_ids is not None:
-            self.e2e = AutosarEnd2EndProperties()
+            self.e2e = E2E()
             logging.info("set data ids, but just autosar profile 2 is supported!")
             self.e2e.data_ids = data_ids
         else:
@@ -36,7 +36,7 @@ class Message(Value):
         logging.debug("create message {}".format(metadata._name))
     def add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str): #todo check if this function should moved to another class
         if self.e2e is None:
-            self.e2e = AutosarEnd2EndProperties()
+            self.e2e = E2E()
             logging.info("set data ids, but just autosar profile 2 is supported!")
         self.e2e.data_ids = data_ids
         self.e2e.crc_signal_name = crc_signal
@@ -81,7 +81,7 @@ class MessageTx(Message):
         self.notify(self._can_message)
 
     def _update_can_message(self,value) -> None:
-        self._update_message(value)
+        self._update_message()
         if self._send_msg:
             self._can_bus.send(self._can_message)
 
@@ -96,7 +96,7 @@ class MessageTxCycle(MessageTx):
         logging.ERROR("is a periodic message and can not be send after update")
     
     def _update_can_message(self,value) -> None:
-        self._update_message(value)    
+        self._update_message()    
         if self._periodic_task is not None:
             self._periodic_task.modify_data(self._can_message)
 
@@ -127,9 +127,22 @@ class MessageTxCycle(MessageTx):
 
 
 class MessageTxCycleE2E(MessageTxCycle):
-
-    def __init__(self, metadata:database.Message, can_bus:can.BusABC, data_ids:list, crc_signal:str, snc_signal:str):   #add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str)
+    running = False
+    def __init__(self, metadata:database.Message, can_bus:can.BusABC):   #add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str)
         super().__init__(metadata, can_bus)
+        
+        for signal in metadata.signals:
+            sigType = 'GenSigFuncType'
+            if sigType in signal.dbc.attributes:
+                if signal.dbc.attributes[sigType].value == 2:
+                    crc_signal = signal.name
+                if signal.dbc.attributes[sigType].value == 1:
+                    snc_signal = signal.name
+        data_ids = metadata.dbc.attributes['DataIds'].value
+        try:
+            data_ids = ast.literal_eval(data_ids)
+        except :
+            logging.error("can not convert data ids to list")
         self.add_data_ids(data_ids, crc_signal, snc_signal)
 
     def _update_e2e(self, msg: can.Message) -> None:
@@ -140,14 +153,14 @@ class MessageTxCycleE2E(MessageTxCycle):
         self._can_message.data[0] = crc
     
     def _update_can_message(self, value) -> None:
-        self._update_message(value)    
+        self._update_message()    
         self._update_e2e(self._can_message)
-        if self._periodic_publisher is not None:
+        if self.running:
             logging.debug("update periodic e2e send message {}".format(self._metadata._name))
         else:
             logging.debug("periodic e2e send message {} is not started".format(self._metadata._name))
 
-    async def _cycle(self, value):
+    async def __cycle(self, value):
         self.timestamp = datetime.datetime.now().timestamp()
         self.send()
         await asyncio.sleep(self._metadata.cycle_time / 1000.0)
@@ -160,13 +173,11 @@ class MessageTxCycleE2E(MessageTxCycle):
         if self._metadata.cycle_time:
             for signal in self._metadata._signals:
                 self.__dict__["_signal_"+signal.name].init_value()
-            self._update_can_message(None)
             self._periodic_publisher = (self | op.MapAsync(self.__cycle, mode=op.AsyncMode.CONCURRENT))
             self._periodic_feedback = self._periodic_publisher.subscribe(Sink(self._increase_counter))
             logging.debug("set periodic publisher for message {}".format(self._metadata._name))
-            self._periodic_publisher.subscribe(self._send_msg)
-            self._periodic_publisher.subscribe(self.notify)
             self.running = True
+            self._update_can_message(None)
         else:
             print("is not a periodic message")
     def stop_periodic(self):
@@ -186,7 +197,21 @@ class MessageRx(Message):
             setattr(self, "_signal_"+signal.name, Signal(signal) )
             setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self ) )
             self.__dict__["_signal_"+signal.name].subscribe(Sink(logging.debug, "Signal {} changed to value = %".format(signal.name)))
-            setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.error("is a resiver signal and can not be set! value={}".format(value)),self ) ) 
+            setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.error("is a resiver signal and can not be set! value={}".format(value)),self ) )
+            sigType = 'GenSigFuncType'
+            if sigType in signal.dbc.attributes:
+                if signal.dbc.attributes[sigType].value == 2:
+                    crc_signal = signal.name
+                if signal.dbc.attributes[sigType].value == 1:
+                    snc_signal = signal.name
+        if "DataIds" in metadata.dbc.attributes:
+            data_ids = metadata.dbc.attributes['DataIds'].value
+            try:
+                data_ids = ast.literal_eval(data_ids)
+                self.add_data_ids(data_ids, crc_signal, snc_signal)
+            except :
+                logging.debug("MSG rx is not with E2E, can not convert data ids to list")
+
     
     def _update_data(self, msg: can.Message) -> None:
         try:
@@ -210,7 +235,13 @@ def create_message(metadata:database.Message, sender:bool, _can_bus:can.BusABC=N
     """Create a message (Value)"""
 
     if sender:
-        msg_obj= MessageTx(metadata, _can_bus)
+        #if metadata.cycle_time and metadata.signals[0].dbc.attributes['GenSigFuncType'].value == 2:
+        if metadata.cycle_time and 'DataIds' in metadata.dbc.attributes:
+            msg_obj= MessageTxCycleE2E(metadata, _can_bus)
+        elif metadata.cycle_time:
+            msg_obj= MessageTxCycle(metadata, _can_bus)
+        else:
+            msg_obj= MessageTx(metadata, _can_bus)
     else:
         msg_obj= MessageRx(metadata)
     return msg_obj
