@@ -130,14 +130,17 @@ class MessageTxCycleE2E(MessageTxCycle):
     running = False
     def __init__(self, metadata:database.Message, can_bus:can.BusABC):   #add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str)
         super().__init__(metadata, can_bus)
-        
         for signal in metadata.signals:
             sigType = 'GenSigFuncType'
             if sigType in signal.dbc.attributes:
                 if signal.dbc.attributes[sigType].value == 2:
                     crc_signal = signal.name
+                    for subscriber_obj in self.__dict__["_signal_"+crc_signal].subscriptions:
+                        self.__dict__["_signal_"+crc_signal].unsubscribe(subscriber_obj)
                 if signal.dbc.attributes[sigType].value == 1:
                     snc_signal = signal.name
+                    for subscriber_obj in self.__dict__["_signal_"+snc_signal].subscriptions:
+                        self.__dict__["_signal_"+snc_signal].unsubscribe(subscriber_obj)
         data_ids = metadata.dbc.attributes['DataIds'].value
         try:
             data_ids = ast.literal_eval(data_ids)
@@ -156,13 +159,14 @@ class MessageTxCycleE2E(MessageTxCycle):
         self._update_message()    
         self._update_e2e(self._can_message)
         if self.running:
-            logging.debug("update periodic e2e send message {}".format(self._metadata._name))
+            logging.debug("update periodic e2e send message {}".format(self._metadata._name) )
         else:
             logging.debug("periodic e2e send message {} is not started".format(self._metadata._name))
 
     async def __cycle(self, value):
         self.timestamp = datetime.datetime.now().timestamp()
         self.send()
+        logging.debug("send periodic e2e send message {} at timestep {}".format(self._metadata._name, self.timestamp))
         await asyncio.sleep(self._metadata.cycle_time / 1000.0)
         snc = self.__dict__["_signal_"+self.e2e.snc_signal_name].get()
         return snc
@@ -196,7 +200,7 @@ class MessageRx(Message):
         for signal in metadata._signals:
             setattr(self, "_signal_"+signal.name, Signal(signal) )
             setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self ) )
-            self.__dict__["_signal_"+signal.name].subscribe(Sink(logging.debug, "Signal {} changed to value = %".format(signal.name)))
+            self.__dict__["_signal_"+signal.name].subscribe(Sink( lambda value: logging.debug("Signal {} changed to value = {}".format(signal.name, value) ) ))
             setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.error("is a resiver signal and can not be set! value={}".format(value)),self ) )
             sigType = 'GenSigFuncType'
             if sigType in signal.dbc.attributes:

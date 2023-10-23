@@ -40,7 +40,7 @@ VAL_TABLE_ operation_mode 7 "unused" 6 "unused" 5 "unused" 4 "Active Discharge" 
 
 BO_ 4 STATUS: 8 ECU
  SG_ c_state : 40|2@1+ (1,0) [0|3] "" Vector__XXX
- SG_ temp : 56|8@1+ (1,-40) [-40|140] "�C"  CONTROL
+ SG_ temp : 56|8@1+ (1,-40) [-40|140] "°C"  CONTROL
  SG_ STATUS_SNC : 8|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ STATUS_CRC : 0|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ value_pca : 26|1@1+ (1,0) [0|0] "" Vector__XXX
@@ -274,14 +274,14 @@ BA_DEF_DEF_REL_ "GenSigTimeoutTime" 0;
 BA_ "Manufacturer" "test";
 BA_ "BusType" "CAN";
 BA_ "DBName" "VehicleCan";
-BA_ "GenMsgCycleTime" BO_ 4 100;
-BA_ "GenMsgCycleTime" BO_ 3 100;
-BA_ "GenMsgCycleTime" BO_ 2 100;
+BA_ "GenMsgCycleTime" BO_ 4 40000;
+BA_ "GenMsgCycleTime" BO_ 3 30000;
+BA_ "GenMsgCycleTime" BO_ 2 10000;
 BA_ "NmAsrMessage" BO_ 5 1;
 BA_ "MsgType" BO_ 5 1;
 BA_ "NmMessage" BO_ 5 1;
 BA_ "GenMsgSendType" BO_ 5 8;
-BA_ "GenMsgCycleTime" BO_ 5 100;
+BA_ "GenMsgCycleTime" BO_ 5 60000;
 BA_ "DataIds" BO_ 2 "[0x42, 0x52, 0x55, 0x53, 0x41, 0x20, 0x48, 0x59, 0x50, 0x4F, 0x57, 0x45, 0x52, 0x20, 0x41, 0x47]";
 BA_ "DataIds" BO_ 3 "[0x42, 0x52, 0x55, 0x53, 0x41, 0x20, 0x48, 0x59, 0x50, 0x4F, 0x57, 0x45, 0x52, 0x20, 0x41, 0x47]";
 BA_ "DataIds" BO_ 4 "[0x42, 0x52, 0x55, 0x53, 0x41, 0x20, 0x48, 0x59, 0x50, 0x4F, 0x57, 0x45, 0x52, 0x20, 0x41, 0x47]";
