@@ -11,6 +11,12 @@ import ast
 
 
 class Signal(Value):
+    """
+    A class representing a signal in a message.
+
+    Attributes:
+    - metadata: An object containing metadata about the signal.
+    """
     def __init__(self, metadata):
         super().__init__()
         self._metadata = metadata
@@ -24,7 +30,22 @@ class Signal(Value):
 
 
 class Message(Value):
+    """
+    Represents a CAN message.
+
+    Attributes:
+        _metadata (database.Message): The metadata of the message.
+        e2e (E2E): The end-to-end data object.
+    """
+
     def __init__(self, metadata:database.Message, data_ids:list=None):
+        """
+        Initializes a new instance of the Message class.
+
+        Args:
+            metadata (database.Message): The metadata of the message.
+            data_ids (list, optional): The list of data IDs. Defaults to None.
+        """
         super().__init__()
         self._metadata = metadata
         if data_ids is not None:
@@ -34,7 +55,16 @@ class Message(Value):
         else:
             self.e2e = None
         logging.debug("create message {}".format(metadata._name))
-    def add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str): #todo check if this function should moved to another class
+
+    def add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str):
+        """
+        Adds data IDs to the message.
+
+        Args:
+            data_ids (list): The list of data IDs.
+            crc_signal (str): The name of the CRC signal.
+            snc_signal (str): The name of the SNC signal.
+        """
         if self.e2e is None:
             self.e2e = E2E()
             logging.info("set data ids, but just autosar profile 2 is supported!")
@@ -44,6 +74,18 @@ class Message(Value):
          
 
 class MessageTx(Message):
+    """
+    A class representing a CAN message that can be transmitted on a CAN bus.
+
+    Args:
+        metadata (database.Message): The metadata associated with the message.
+        can_bus (can.BusABC, optional): The CAN bus to transmit the message on. Defaults to None.
+
+    Attributes:
+        _can_bus (can.BusABC): The CAN bus to transmit the message on.
+        _send_msg (bool): A flag indicating whether the message should be sent after it is updated.
+    """
+
     def __init__(self, metadata:database.Message, can_bus:can.BusABC=None):
         super().__init__(metadata)
         self._can_bus = can_bus
@@ -59,17 +101,36 @@ class MessageTx(Message):
             self.__dict__["_signal_"+signal.name].subscribe(Sink( self._update_can_message))   
     
     def _get_signals(self) -> dict: 
+        """
+        Returns a dictionary containing the current values of all signals in the message.
+
+        Returns:
+            dict: A dictionary containing the current values of all signals in the message.
+        """
         data = dict()
         for signal in self._metadata._signals:
             data[signal.name] = self.__dict__["_signal_"+signal.name].get()
         return data
     
     def send_after_update(self, value:bool = True) -> None:
+        """
+        Sets the flag indicating whether the message should be sent after it is updated.
+
+        Args:
+            value (bool, optional): The value to set the flag to. Defaults to True.
+        """
         self._send_msg = value
     
     def send(self) -> None:
+        """
+        Sends the message on the associated CAN bus.
+        """
         self._can_bus.send(self._can_message)
+    
     def _update_message(self) -> None:
+        """
+        Updates the message with the current values of all signals.
+        """
         logging.debug('Update CAN message: %s', self._metadata._name)
         arbitration_id = self._metadata.frame_id
         extended_id = self._metadata.is_extended_frame
@@ -81,26 +142,51 @@ class MessageTx(Message):
         self.notify(self._can_message)
 
     def _update_can_message(self,value) -> None:
+        """
+        Updates the message and sends it on the associated CAN bus if the send flag is set.
+
+        Args:
+            value: The new value of a signal in the message.
+        """
         self._update_message()
         if self._send_msg:
             self._can_bus.send(self._can_message)
 
 
 class MessageTxCycle(MessageTx):
+    """
+    A class representing a periodic message that is sent cyclically on the CAN bus.
+
+    Attributes:
+    metadata (database.Message): The metadata of the message.
+    can_bus (can.BusABC): The CAN bus to send the message on.
+    _periodic_task: The periodic task that sends the message.
+    _send_msg (bool): A flag indicating whether the message should be sent.
+    """
+
     def __init__(self, metadata:database.Message, can_bus:can.BusABC=None):
         super().__init__(metadata, can_bus)
         self._periodic_task = None
         self._send_msg = False
     
     def send_after_update(self, value):
+        """
+        Raises an error as a periodic message cannot be sent after an update.
+        """
         logging.ERROR("is a periodic message and can not be send after update")
     
     def _update_can_message(self,value) -> None:
+        """
+        Updates the CAN message with the current signal values.
+        """
         self._update_message()    
         if self._periodic_task is not None:
             self._periodic_task.modify_data(self._can_message)
 
     def start_periodic(self):
+        """
+        Starts sending the message periodically on the CAN bus.
+        """
         if self._metadata.cycle_time:
             for signal in self._metadata._signals:
                 self.__dict__["_signal_"+signal.name].init_value()
@@ -115,6 +201,9 @@ class MessageTxCycle(MessageTx):
             print("is not a periodic message")
 
     def stop_periodic(self):
+        """
+        Stops sending the message periodically on the CAN bus.
+        """
         if self._periodic_task is not None:
             self._periodic_task.stop()
             self._periodic_task = None
@@ -127,8 +216,36 @@ class MessageTxCycle(MessageTx):
 
 
 class MessageTxCycleE2E(MessageTxCycle):
+    """
+    A class representing a periodic message with end-to-end (E2E) protection.
+
+    Attributes:
+    - running (bool): Indicates whether the periodic message is currently running.
+    - metadata (database.Message): The metadata of the message.
+    - can_bus (can.BusABC): The CAN bus to which the message is sent.
+    - crc_signal (str): The name of the signal used for cyclic redundancy check (CRC) computation.
+    - snc_signal (str): The name of the signal used for sequence number counter (SNC) computation.
+    - data_ids (list): The list of data IDs used for E2E protection.
+    - timestamp (float): The timestamp of the last message sent.
+
+    Methods:
+    - __init__(self, metadata:database.Message, can_bus:can.BusABC): Initializes the MessageTxCycleE2E object.
+    - _update_e2e(self, msg: can.Message) -> None: Updates the E2E protection of the message.
+    - _update_can_message(self, value) -> None: Updates the CAN message.
+    - __cycle(self, value): Sends the periodic message and returns the SNC.
+    - _increase_counter(self, snc:int): Increases the SNC and notifies subscribers.
+    - start_periodic(self): Starts the periodic message.
+    - stop_periodic(self): Stops the periodic message.
+    """
     running = False
-    def __init__(self, metadata:database.Message, can_bus:can.BusABC):   #add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str)
+    def __init__(self, metadata:database.Message, can_bus:can.BusABC):
+        """
+        Initializes the MessageTxCycleE2E object.
+
+        Args:
+        - metadata (database.Message): The metadata of the message.
+        - can_bus (can.BusABC): The CAN bus to which the message is sent.
+        """
         super().__init__(metadata, can_bus)
         for signal in metadata.signals:
             sigType = 'GenSigFuncType'
@@ -149,6 +266,12 @@ class MessageTxCycleE2E(MessageTxCycle):
         self.add_data_ids(data_ids, crc_signal, snc_signal)
 
     def _update_e2e(self, msg: can.Message) -> None:
+        """
+        Updates the E2E protection of the message.
+
+        Args:
+        - msg (can.Message): The CAN message to be updated.
+        """
         seq_counter = self.__dict__["_signal_"+self.e2e.snc_signal_name].get()
         data_id = self.e2e.data_ids[seq_counter]
         crc = compute_profile2_crc(self._can_message.data, data_id )
@@ -156,6 +279,9 @@ class MessageTxCycleE2E(MessageTxCycle):
         self._can_message.data[0] = crc
     
     def _update_can_message(self, value) -> None:
+        """
+        Updates the CAN message.
+        """
         self._update_message()    
         self._update_e2e(self._can_message)
         if self.running:
@@ -164,16 +290,36 @@ class MessageTxCycleE2E(MessageTxCycle):
             logging.debug("periodic e2e send message {} is not started".format(self._metadata._name))
 
     async def __cycle(self, value):
+        """
+        Sends the periodic message and returns the SNC.
+
+        Args:
+        - value: The value to be passed to the coroutine.
+
+        Returns:
+        - snc (int): The updated sequence number counter.
+        """
         self.timestamp = datetime.datetime.now().timestamp()
         self.send()
         logging.debug("send periodic e2e send message {} at timestep {}".format(self._metadata._name, self.timestamp))
         await asyncio.sleep(self._metadata.cycle_time / 1000.0)
         snc = self.__dict__["_signal_"+self.e2e.snc_signal_name].get()
         return snc
+
     def _increase_counter(self, snc:int):
+        """
+        Increases the SNC and notifies subscribers.
+
+        Args:
+        - snc (int): The current sequence number counter.
+        """
         self.__dict__["_signal_"+self.e2e.snc_signal_name].notify( (snc + 1) % len(self.e2e.data_ids) )
         self.notify(self._can_message)
+
     def start_periodic(self):
+        """
+        Starts the periodic message.
+        """
         if self._metadata.cycle_time:
             for signal in self._metadata._signals:
                 self.__dict__["_signal_"+signal.name].init_value()
@@ -184,7 +330,11 @@ class MessageTxCycleE2E(MessageTxCycle):
             self._update_can_message(None)
         else:
             print("is not a periodic message")
+
     def stop_periodic(self):
+        """
+        Stops the periodic message.
+        """
         if self._periodic_feedback is not None:
             #self._periodic_publisher.dispose()
             self._periodic_feedback.dispose()
@@ -194,6 +344,23 @@ class MessageTxCycleE2E(MessageTxCycle):
 
 
 class MessageRx(Message):
+    """
+    A class representing a received CAN message.
+
+    Inherits from the Message class and adds functionality for decoding and updating signals.
+
+    Attributes:
+    - metadata (database.Message): The metadata for the message.
+    - timestamp (float): The timestamp for the message.
+    - _signal_* (Signal): The signals for the message.
+    - _get_* (method): Methods for getting the value of each signal.
+    - _set_* (method): Methods for setting the value of each signal (not available for receiver signals).
+    - e2e (EndToEnd): The end-to-end configuration for the message (if applicable).
+
+    Methods:
+    - __init__(self, metadata:database.Message): Initializes the MessageRx object.
+    - _update_data(self, msg: can.Message) -> None: Updates the signals for the message based on the received CAN message.
+    """
     def __init__(self, metadata:database.Message):
         super().__init__(metadata)
         self.timestamp = 0
@@ -218,6 +385,12 @@ class MessageRx(Message):
 
     
     def _update_data(self, msg: can.Message) -> None:
+        """
+        Updates the signals for the message based on the received CAN message.
+
+        Args:
+        - msg (can.Message): The received CAN message.
+        """
         try:
             data_decoded = self._metadata.decode(msg.data)
         except ValueError:
@@ -251,46 +424,37 @@ def create_message(metadata:database.Message, sender:bool, _can_bus:can.BusABC=N
     return msg_obj
 
 
+def create_message_class(name: str, is_tx: bool, signals: list[str], messages: list[str]) -> type[Message]:
+    """
+    Creates a dynamic class definition for messages RX and TX with messages and signals as setter and getter property.
 
-test = """ def create_device(name:str, sender:bool ,bus:can.BusABC, database:Database) -> Node:
-    "Create a device (Node)"
-# creating class dynamically 
+    todo: this is not used yet and not tested
 
+    Args:
+    - name (str): The name of the class.
+    - is_tx (bool): True if the class represents a TX message, False if it represents an RX message.
+    - signals (List[str]): The list of signal names for the message.
+    - messages (List[str]): The list of message names for the message.
 
-    if sender:
-        pass
-    else:
-        Device = type(name, (MessageRx, ), { 
-            # constructor 
-            "__init__": super().__init__(), 
-            
-            # data members 
-            "string_attribute": "Geeks 4 geeks !", 
-            "int_attribute": 1706256, 
-            
-            # member functions 
-            "func_arg": displayMethod, 
-        }) 
+    Returns:
+    - Type[Message]: The dynamically generated class definition.
+    """
+    # Define the base class
+    base_class = MessageTx if is_tx else MessageRx
 
+    # Define the class dictionary
+    class_dict = {
+        # Constructor
+        "__init__": lambda self, metadata: base_class.__init__(self, metadata),
 
-    return Device(name, bus, database)
+        # Signals
+        **{f"_{signal}": property(lambda self: self._get_signal(signal), lambda self, value: self._set_signal(signal, value)) for signal in signals},
 
-self.__dict__[ signal.name ] = property(fget=self.__dict__["_get_"+signal.name], fset=self.__dict__["_set_"+signal.name],  doc="The signal property." )
+        # Messages
+        **{f"_{message}": property(lambda self: self._get_message(message), lambda self, value: self._set_message(message, value)) for message in messages}
+    }
 
+    # Create the class
+    message_class = type(name, (base_class,), class_dict)
 
-
-        for signal in metadata._signals:
-            setattr(self, "_signal_"+signal.name, Signal(signal) )
-            if sender:
-                setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value: self.__dict__["_signal_"+signal.name].notify(value),self) )
-                signal.initial = 10
-                if signal.initial != None:
-                    self.__dict__["_signal_"+signal.name].notify(signal.initial)
-                logging.debug("set initial value of signal {} to {} with type {}".format(signal.name,signal.initial,type(signal.initial)))
-                setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self )  )
-                self.__dict__["_signal_"+signal.name].subscribe(Sink( self._update_can_message))
-            else:
-                setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self ) )
-                self.__dict__["_signal_"+signal.name].subscribe(Sink(logging.debug))
-                setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.debug("is a resiver signal and can not be set! value={}".format(value)),self ) ) 
-"""
+    return message_class
