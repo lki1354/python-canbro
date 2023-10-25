@@ -1,13 +1,17 @@
 from setuptools import setup, find_packages
 
+with open('README.md', 'rb') as readme_file:
+    readme = readme_file.read().decode('utf-8')
+
 setup(
     name='canbro',
     version='0.0.1',
-    description='Python module for working with Controller Area Network (CAN) messages and signals',
+    description='This package extend the python-can with the broqer package. This provides the functionality to work in a reactive style with can signals and messages.',
     author='Lukas Riegler',
     author_email='lukasantonriegler@gmail.com',
     url='https://github.com/lki1354/python-canbro',
     packages=find_packages(),
+    long_description=readme,
     install_requires=[
         'python-can>=3.3',
         'cantools>=36.2',
