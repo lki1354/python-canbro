@@ -9,7 +9,7 @@ setup(
     url='https://github.com/lki1354/python-canbro',
     packages=find_packages(),
     install_requires=[
-        'can>=3.3',
+        'python-can>=3.3',
         'cantools>=36.2',
         'broqer>=1.7',
     ],
