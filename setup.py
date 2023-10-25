@@ -5,7 +5,7 @@ with open('README.md', 'rb') as readme_file:
 
 setup(
     name='canbro',
-    version='0.0.1',
+    version='0.0.2',
     description='This package extend the python-can with the broqer package. This provides the functionality to work in a reactive style with can signals and messages.',
     author='Lukas Riegler',
     author_email='lukasantonriegler@gmail.com',
