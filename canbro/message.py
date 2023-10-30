@@ -25,7 +25,8 @@ class Signal(Value):
             self._state = self._metadata.initial
             logging.debug("set initial value of signal {} to {} with type {}".format(self._metadata.name,self._state,type(self._state)))
         else:
-            logging.error("signal {} has no initial value".format(self._metadata.name,))
+            self._state = self._metadata.minimum + 1
+            logging.error("signal {} has no initial value set to min +1".format(self._metadata.name,))
 
 
 
@@ -285,7 +286,7 @@ class MessageTxCycleE2E(MessageTxCycle):
         self._update_message()    
         self._update_e2e(self._can_message)
         if self.running:
-            logging.debug("update periodic e2e send message {}".format(self._metadata._name) )
+            logging.debug("update periodic e2e send message {} with value = {} ".format(self._metadata._name, value) )
         else:
             logging.debug("periodic e2e send message {} is not started".format(self._metadata._name))
 
