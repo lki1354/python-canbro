@@ -52,9 +52,9 @@ class NodeListener(can.Listener):
             database_message = self._node._database.get_message_by_frame_id(
                 msg.arbitration_id)
         except KeyError:
-            logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
+            logging.info('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
             return
         try:
             self._node.__dict__[database_message._name]._update_data(msg)
         except:
-            logging.ERROR('Received message with arbitration id {} and is not a instance of this node. '.format( msg.arbitration_id ) )
+            logging.info('Received message with arbitration id {} and is not a instance of this node. '.format( msg.arbitration_id ) )
