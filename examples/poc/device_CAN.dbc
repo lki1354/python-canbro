@@ -296,6 +296,7 @@ BA_ "GenSigStartValue" SG_ 2 DEM_CRC 255;
 BA_ "GenSigStartValue" SG_ 2 li_set 1;
 BA_ "GenSigStartValue" SG_ 2 hv_set 1;
 BA_ "GenSigStartValue" SG_ 2 lv_set 130;
+BA_ "GenSigStartValue" SG_ 2 operation_mode 0;
 BA_ "GenSigSendType" SG_ 5 NM_PNI_Control 7;
 BA_ "GenSigSendType" SG_ 5 NM_CSR_Control 7;
 BA_ "GenSigSendType" SG_ 5 NM_AW_Control 7;

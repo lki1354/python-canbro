@@ -1,5 +1,42 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=7.0"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
-write_to = "canbro/_version.py"
+[project]
+name = "canbro"
+version = "0.0.3-alpha"
+dependencies = [
+  "python-can>=4.3.1",
+  "cantools>=39.4.4",
+  "broqer>=3.0.3",
+]
+requires-python = ">=3.10"
+authors = [
+  {name = "Lukas Riegler", email = "lukasantonriegler@gmail.com"},
+]
+maintainers = [
+  {name = "Lukas Riegler", email = "lukasantonriegler@gmail.com"},
+]
+description = "This package extend the python-can with the broqer package. This provides the functionality to work in a reactive style with can signals and messages."
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["can", "reactive", "DBC", "ARXML"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+
+[project.optional-dependencies]
+
+[project.urls]
+Homepage = "https://github.com/lki1354/python-canbro"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/lki1354/python-canbro.git"
+"Bug Tracker" = "https://github.com/lki1354/python-canbro/issues"
+
+[project.scripts]
+canbro-cli = "canbro:main_cli"
