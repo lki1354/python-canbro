@@ -9,6 +9,19 @@ import asyncio
 import datetime
 import ast
 
+from typing import (
+    Any,
+    Callable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
+
 
 class Signal(Value):
     """
@@ -39,7 +52,7 @@ class Message(Value):
         e2e (E2E): The end-to-end data object.
     """
 
-    def __init__(self, metadata:database.Message, data_ids:list=None):
+    def __init__(self, metadata:database.Message):
         """
         Initializes a new instance of the Message class.
 
@@ -49,29 +62,8 @@ class Message(Value):
         """
         super().__init__()
         self._metadata = metadata
-        if data_ids is not None:
-            self.e2e = E2E()
-            logging.info("set data ids, but just autosar profile 2 is supported!")
-            self.e2e.data_ids = data_ids
-        else:
-            self.e2e = None
         logging.debug("create message {}".format(metadata._name))
 
-    def add_data_ids(self, data_ids:list, crc_signal:str, snc_signal:str):
-        """
-        Adds data IDs to the message.
-
-        Args:
-            data_ids (list): The list of data IDs.
-            crc_signal (str): The name of the CRC signal.
-            snc_signal (str): The name of the SNC signal.
-        """
-        if self.e2e is None:
-            self.e2e = E2E()
-            logging.info("set data ids, but just autosar profile 2 is supported!")
-        self.e2e.data_ids = data_ids
-        self.e2e.crc_signal_name = crc_signal
-        self.e2e.snc_signal_name = snc_signal
          
 
 class MessageTx(Message):
@@ -87,10 +79,10 @@ class MessageTx(Message):
         _send_msg (bool): A flag indicating whether the message should be sent after it is updated.
     """
 
-    def __init__(self, metadata:database.Message, can_bus:can.BusABC=None):
+    def __init__(self, metadata:database.Message, can_bus:can.BusABC=None, update_msg:bool = True):
         super().__init__(metadata)
         self._can_bus = can_bus
-        self._send_msg = False
+        self._send_msg = update_msg
         for signal in metadata._signals:
             setattr(self, "_signal_"+signal.name, Signal(signal) )
             setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value: self.__dict__["_signal_"+signal.name].notify(value),self) )
@@ -99,7 +91,8 @@ class MessageTx(Message):
             #if signal.initial != None: #todo init value
             #    self.__dict__["_signal_"+signal.name]._state = signal.initial
             setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self )  )
-            self.__dict__["_signal_"+signal.name].subscribe(Sink( self._update_can_message))   
+            if self._send_msg :
+                self.__dict__["_signal_"+signal.name].subscribe(Sink( self._update_can_message))   
     
     def _get_signals(self) -> dict: 
         """
@@ -113,7 +106,7 @@ class MessageTx(Message):
             data[signal.name] = self.__dict__["_signal_"+signal.name].get()
         return data
     
-    def send_after_update(self, value:bool = True) -> None:
+    def send_after_update(self, value:bool) -> None:
         """
         Sets the flag indicating whether the message should be sent after it is updated.
 
@@ -126,7 +119,7 @@ class MessageTx(Message):
         """
         Sends the message on the associated CAN bus.
         """
-        self._can_bus.send(self._can_message)
+        self._can_bus.send(self._state)
     
     def _update_message(self) -> None:
         """
@@ -139,8 +132,8 @@ class MessageTx(Message):
         logging.debug('Update CAN Data: {}'.format(data) )
         pruned_data = self._metadata.gather_signals(data)
         data = self._metadata.encode(pruned_data)
-        self._can_message = can.Message(arbitration_id=arbitration_id, is_extended_id=extended_id, data=data)
-        self.notify(self._can_message)
+        _can_message = can.Message(arbitration_id=arbitration_id, is_extended_id=extended_id, data=data)
+        self.notify(_can_message)
 
     def _update_can_message(self,value) -> None:
         """
@@ -151,7 +144,7 @@ class MessageTx(Message):
         """
         self._update_message()
         if self._send_msg:
-            self._can_bus.send(self._can_message)
+            self._can_bus.send(self._state)
 
 
 class MessageTxCycle(MessageTx):
@@ -165,10 +158,10 @@ class MessageTxCycle(MessageTx):
     _send_msg (bool): A flag indicating whether the message should be sent.
     """
 
-    def __init__(self, metadata:database.Message, can_bus:can.BusABC=None):
-        super().__init__(metadata, can_bus)
+    def __init__(self, metadata:database.Message, can_bus:can.BusABC=None, msg_callback: Optional[Callable[[can.Message], None]] = None ):
+        super().__init__(metadata, can_bus, update_msg=False)
         self._periodic_task = None
-        self._send_msg = False
+        self._msg_callback = msg_callback
     
     def send_after_update(self, value):
         """
@@ -176,24 +169,36 @@ class MessageTxCycle(MessageTx):
         """
         logging.ERROR("is a periodic message and can not be send after update")
     
-    def _update_can_message(self,value) -> None:
+    def _update_calc_E2E(self):
         """
-        Updates the CAN message with the current signal values.
+        update message data and calculates the end-to-end (E2E) protection for the message.
         """
-        self._update_message()    
-        if self._periodic_task is not None:
-            self._periodic_task.modify_data(self._can_message)
+        self._update_message()
+        if self._msg_callback is not None:
+            self._msg_callback(self._state)
+        
 
-    def start_periodic(self):
+    def _update_can_message(self,value) -> None:
+        logging.ERROR("is a periodic message will be update before sending")
+ #       """
+ #       Updates the CAN message with the current signal values.
+ #       """
+ #       self._update_message()    
+ #       if self._periodic_task is not None:
+ #           self._periodic_task.modify_data(self._state)
+
+    def start_periodic(self, msg_callback: Optional[Callable[[can.Message], None]] = None):
         """
         Starts sending the message periodically on the CAN bus.
         """
+        if msg_callback is not None:
+            self._msg_callback = msg_callback
         if self._metadata.cycle_time:
             for signal in self._metadata._signals:
                 self.__dict__["_signal_"+signal.name].init_value()
             #self._periodic_publisher = self | op.Throttle(self._metadata.cycle_time / 1000.0)
-            self._update_can_message(None)
-            self._periodic_task = self._can_bus.send_periodic( self._can_message, self._metadata.cycle_time / 1000.0)
+            #self._update_can_message(None)
+            self._periodic_task = self._can_bus.send_periodic( self._state, self._metadata.cycle_time / 1000.0, modifier_callback=self._calc_E2E)
             logging.debug("set periodic publisher for message {}".format(self._metadata._name))
             #self._periodic_publisher.subscribe(self._send_msg)
             #self._periodic_publisher.subscribe(self.notify)
@@ -214,135 +219,6 @@ class MessageTxCycle(MessageTx):
             self.running = False
         else:
             print("is not a periodic message")
-
-
-class MessageTxCycleE2E(MessageTxCycle):
-    """
-    A class representing a periodic message with end-to-end (E2E) protection.
-
-    Attributes:
-    - running (bool): Indicates whether the periodic message is currently running.
-    - metadata (database.Message): The metadata of the message.
-    - can_bus (can.BusABC): The CAN bus to which the message is sent.
-    - crc_signal (str): The name of the signal used for cyclic redundancy check (CRC) computation.
-    - snc_signal (str): The name of the signal used for sequence number counter (SNC) computation.
-    - data_ids (list): The list of data IDs used for E2E protection.
-    - timestamp (float): The timestamp of the last message sent.
-
-    Methods:
-    - __init__(self, metadata:database.Message, can_bus:can.BusABC): Initializes the MessageTxCycleE2E object.
-    - _update_e2e(self, msg: can.Message) -> None: Updates the E2E protection of the message.
-    - _update_can_message(self, value) -> None: Updates the CAN message.
-    - __cycle(self, value): Sends the periodic message and returns the SNC.
-    - _increase_counter(self, snc:int): Increases the SNC and notifies subscribers.
-    - start_periodic(self): Starts the periodic message.
-    - stop_periodic(self): Stops the periodic message.
-    """
-    running = False
-    def __init__(self, metadata:database.Message, can_bus:can.BusABC):
-        """
-        Initializes the MessageTxCycleE2E object.
-
-        Args:
-        - metadata (database.Message): The metadata of the message.
-        - can_bus (can.BusABC): The CAN bus to which the message is sent.
-        """
-        super().__init__(metadata, can_bus)
-        for signal in metadata.signals:
-            sigType = 'GenSigFuncType'
-            if sigType in signal.dbc.attributes:
-                if signal.dbc.attributes[sigType].value == 2:
-                    crc_signal = signal.name
-                    for subscriber_obj in self.__dict__["_signal_"+crc_signal].subscriptions:
-                        self.__dict__["_signal_"+crc_signal].unsubscribe(subscriber_obj)
-                if signal.dbc.attributes[sigType].value == 1:
-                    snc_signal = signal.name
-                    for subscriber_obj in self.__dict__["_signal_"+snc_signal].subscriptions:
-                        self.__dict__["_signal_"+snc_signal].unsubscribe(subscriber_obj)
-        data_ids = metadata.dbc.attributes['DataIds'].value
-        try:
-            data_ids = ast.literal_eval(data_ids)
-        except :
-            logging.error("can not convert data ids to list")
-        self.add_data_ids(data_ids, crc_signal, snc_signal)
-
-    def _update_e2e(self, msg: can.Message) -> None:
-        """
-        Updates the E2E protection of the message.
-
-        Args:
-        - msg (can.Message): The CAN message to be updated.
-        """
-        seq_counter = self.__dict__["_signal_"+self.e2e.snc_signal_name].get()
-        data_id = self.e2e.data_ids[seq_counter]
-        crc = compute_profile2_crc(self._can_message.data, data_id )
-        self.__dict__["_signal_"+self.e2e.crc_signal_name]._state = crc
-        self._can_message.data[0] = crc
-    
-    def _update_can_message(self, value) -> None:
-        """
-        Updates the CAN message.
-        """
-        self._update_message()    
-        self._update_e2e(self._can_message)
-        if self.running:
-            logging.debug("update periodic e2e send message {} with value = {} ".format(self._metadata._name, value) )
-        else:
-            logging.debug("periodic e2e send message {} is not started".format(self._metadata._name))
-
-    async def __cycle(self, value):
-        """
-        Sends the periodic message and returns the SNC.
-
-        Args:
-        - value: The value to be passed to the coroutine.
-
-        Returns:
-        - snc (int): The updated sequence number counter.
-        """
-        self.timestamp = datetime.datetime.now().timestamp()
-        self.send()
-        logging.debug("send periodic e2e send message {} at timestep {}".format(self._metadata._name, self.timestamp))
-        await asyncio.sleep(self._metadata.cycle_time / 1000.0)
-        snc = self.__dict__["_signal_"+self.e2e.snc_signal_name].get()
-        return snc
-
-    def _increase_counter(self, snc:int):
-        """
-        Increases the SNC and notifies subscribers.
-
-        Args:
-        - snc (int): The current sequence number counter.
-        """
-        self.__dict__["_signal_"+self.e2e.snc_signal_name].notify( (snc + 1) % len(self.e2e.data_ids) )
-        self.notify(self._can_message)
-
-    def start_periodic(self):
-        """
-        Starts the periodic message.
-        """
-        if self._metadata.cycle_time:
-            for signal in self._metadata._signals:
-                self.__dict__["_signal_"+signal.name].init_value()
-            self._periodic_publisher = (self | op.MapAsync(self.__cycle, mode=op.AsyncMode.CONCURRENT))
-            self._periodic_feedback = self._periodic_publisher.subscribe(Sink(self._increase_counter))
-            logging.debug("set periodic publisher for message {}".format(self._metadata._name))
-            self.running = True
-            self._update_can_message(None)
-        else:
-            print("is not a periodic message")
-
-    def stop_periodic(self):
-        """
-        Stops the periodic message.
-        """
-        if self._periodic_feedback is not None:
-            #self._periodic_publisher.dispose()
-            self._periodic_feedback.dispose()
-            self.running = False
-        else:
-            print("is not a periodic message")
-
 
 class MessageRx(Message):
     """
@@ -414,9 +290,7 @@ def create_message(metadata:database.Message, sender:bool, _can_bus:can.BusABC=N
 
     if sender:
         #if metadata.cycle_time and metadata.signals[0].dbc.attributes['GenSigFuncType'].value == 2:
-        if metadata.cycle_time and 'DataIds' in metadata.dbc.attributes:
-            msg_obj= MessageTxCycleE2E(metadata, _can_bus)
-        elif metadata.cycle_time:
+        if metadata.cycle_time:
             msg_obj= MessageTxCycle(metadata, _can_bus)
         else:
             msg_obj= MessageTx(metadata, _can_bus)
