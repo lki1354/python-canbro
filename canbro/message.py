@@ -169,7 +169,7 @@ class MessageTxCycle(MessageTx):
         """
         logging.ERROR("is a periodic message and can not be send after update")
     
-    def _update_calc_E2E(self):
+    def _update_calc_E2E(self,msg: can.Message) -> None:
         """
         update message data and calculates the end-to-end (E2E) protection for the message.
         """
@@ -198,7 +198,8 @@ class MessageTxCycle(MessageTx):
                 self.__dict__["_signal_"+signal.name].init_value()
             #self._periodic_publisher = self | op.Throttle(self._metadata.cycle_time / 1000.0)
             #self._update_can_message(None)
-            self._periodic_task = self._can_bus.send_periodic( self._state, self._metadata.cycle_time / 1000.0, modifier_callback=self._calc_E2E)
+            self._update_message()
+            self._periodic_task = self._can_bus.send_periodic( self._state, self._metadata.cycle_time / 1000.0, modifier_callback=self._update_calc_E2E)
             logging.debug("set periodic publisher for message {}".format(self._metadata._name))
             #self._periodic_publisher.subscribe(self._send_msg)
             #self._periodic_publisher.subscribe(self.notify)
