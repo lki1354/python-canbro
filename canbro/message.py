@@ -63,6 +63,8 @@ class Message(Value):
         super().__init__()
         self._metadata = metadata
         logging.debug("create message {}".format(metadata._name))
+        self.e2e = None
+        logging.info("E2E check is not implemented yet for received messages")
 
          
 
@@ -125,11 +127,11 @@ class MessageTx(Message):
         """
         Updates the message with the current values of all signals.
         """
-        logging.debug('Update CAN message: %s', self._metadata._name)
+        logging.debug('Update CAN TX message: %s', self._metadata._name)
         arbitration_id = self._metadata.frame_id
         extended_id = self._metadata.is_extended_frame
         data = self._get_signals()
-        logging.debug('Update CAN Data: {}'.format(data) )
+        logging.debug('Update CAN TX Data: {}'.format(data) )
         pruned_data = self._metadata.gather_signals(data)
         data = self._metadata.encode(pruned_data)
         _can_message = can.Message(arbitration_id=arbitration_id, is_extended_id=extended_id, data=data)
@@ -174,8 +176,12 @@ class MessageTxCycle(MessageTx):
         update message data and calculates the end-to-end (E2E) protection for the message.
         """
         self._update_message()
+        
         if self._msg_callback is not None:
-            self._msg_callback(self._state)
+            msg = self._state
+            self._msg_callback(msg)
+        else:
+            self._periodic_task.modify_data(self._state)
         
 
     def _update_can_message(self,value) -> None:
@@ -245,7 +251,7 @@ class MessageRx(Message):
         for signal in metadata._signals:
             setattr(self, "_signal_"+signal.name, Signal(signal) )
             setattr(self, "_get_"+signal.name, types.MethodType(lambda self: self.__dict__["_signal_"+signal.name].get() ,self ) )
-            self.__dict__["_signal_"+signal.name].subscribe(Sink( lambda value: logging.debug("Signal {} changed to value = {}".format(signal.name, value) ) ))
+            self.__dict__["_signal_"+signal.name].subscribe(Sink( lambda value, name= signal.name: logging.debug("Signal "+name+" changed to value = {}".format(value) ) ))
             setattr(self, "_set_"+signal.name, types.MethodType(lambda self,value:  logging.error("is a resiver signal and can not be set! value={}".format(value)),self ) )
             sigType = 'GenSigFuncType'
             if sigType in signal.dbc.attributes:
@@ -272,8 +278,8 @@ class MessageRx(Message):
         try:
             data_decoded = self._metadata.decode(msg.data)
         except ValueError:
-            logging.ERROR('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
-        logging.debug('Update signals: %s', self._metadata._name)
+            logging.error('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
+        logging.debug('Update RX signals: %s', self._metadata._name)
         if self.e2e is not None:
             seq_counter = data_decoded[self.e2e.snc_signal_name]
             data_id = self.e2e.data_ids[seq_counter]

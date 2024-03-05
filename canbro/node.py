@@ -49,12 +49,11 @@ class NodeListener(can.Listener):
             # rtr is currently not supported
             return
         try:
-            database_message = self._node._database.get_message_by_frame_id(
-                msg.arbitration_id)
+            database_message = self._node._database.get_message_by_frame_id(msg.arbitration_id)
         except KeyError:
             logging.info('Received unknown message with arbitration id {}'.format( msg.arbitration_id ) )
             return
         try:
             self._node.__dict__[database_message._name]._update_data(msg)
         except:
-            logging.info('Received message with arbitration id {} and is not a instance of this node. '.format( msg.arbitration_id ) )
+            logging.info('Received message with arbitration id {} and name "{}". But it is not a instance of this node. '.format( msg.arbitration_id , database_message._name) )
