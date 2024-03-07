@@ -178,8 +178,8 @@ class MessageTxCycle(MessageTx):
         self._update_message()
         
         if self._msg_callback is not None:
-            msg = self._state
-            self._msg_callback(msg)
+            self._msg_callback(self._state)
+            msg.data = self._state.data
         else:
             self._periodic_task.modify_data(self._state)
         
