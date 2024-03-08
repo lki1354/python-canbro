@@ -8,9 +8,10 @@ This package use the python-can and extend the python-cantools with the python-b
 
 `canbro` requires the following dependencies:
 
-- `can` (version 3.3 or later)
-- `cantools` (version 36.2 or later)
-- `broqer` (version 1.7 or later)
+- `can` (version 4.3.1 or later)
+- `cantools` (version 39.4.4 or later)
+- `broqer` (version 3.0.3 or later)
+
 
 ## Usage
 
