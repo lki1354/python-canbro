@@ -12,7 +12,6 @@ This package use the python-can and extend the python-cantools with the python-b
 - `cantools` (version 39.4.4 or later)
 - `broqer` (version 3.0.3 or later)
 
-
 ## Usage
 
 ### example cylce messages
@@ -42,15 +41,17 @@ show_print = ecu.DEM._signal_operation_mode.subscribe(Sink(show_vcu_value))
 vcu.DEM.start_periodic()
 
 vcu.DEM._signal_operation_mode.notify(2)
-```	
-
+```
 
 ## License
+
 canbro is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Author
+
 canbro was created by Lukas Riegler.
 Contact him via a issue on github.
 
 ## Version
-canbro version 0.0.1 in progress.
+
+canbro version 0.1.1 in progress.
