@@ -183,7 +183,7 @@ class MessageTxCycle(MessageTx):
         else:
             if self._periodic_task is not None:
                 self._periodic_task.modify_data(self._state)
-            logging.DEBUG("no periodic task {}".format(self._metadata._name) )
+            logging.DEBUG("no periodic task {}".format(self) )
         
 
     def _update_can_message(self,value) -> None:
