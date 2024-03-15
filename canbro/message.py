@@ -169,7 +169,7 @@ class MessageTxCycle(MessageTx):
         """
         Raises an error as a periodic message cannot be sent after an update.
         """
-        logging.ERROR("is a periodic message and can not be send after update")
+        logging.error("is a periodic message and can not be send after update")
     
     def _update_calc_E2E(self,msg: can.Message) -> None:
         """
@@ -181,11 +181,14 @@ class MessageTxCycle(MessageTx):
             self._msg_callback(self._state)
             msg.data = self._state.data
         else:
-            self._periodic_task.modify_data(self._state)
+            if self._periodic_task is not None:
+                self._periodic_task.modify_data(self._state)
+            else:
+                logging.warning("!!!no periodic task called from _update_calc_E2E!!!!  {}".format(msg) )
         
 
     def _update_can_message(self,value) -> None:
-        logging.ERROR("is a periodic message will be update before sending")
+        logging.error("is a periodic message will be update before sending")
  #       """
  #       Updates the CAN message with the current signal values.
  #       """

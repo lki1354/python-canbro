@@ -1,0 +1,534 @@
+VERSION "created by canmatrix"
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: DCDC VCU
+
+
+BO_ 2364609562 J1939_DCDC1VC_DCDC: 8 DCDC
+ SG_ DCDC_LoSideU : 0|16@1+ (0.01,0) [0|642.55] "V"  VCU
+ SG_ DCDC_LoSideI : 16|16@1+ (0.1,-3212.7) [-3212.7|3212.8] "A"  VCU
+ SG_ DCDC_HiSideU : 32|16@1+ (0.05,0) [0|3212.75] "V"  VCU
+ SG_ DCDC_HiSideI : 48|16@1+ (0.1,-3212.7) [-3212.7|3212.8] "A"  VCU
+
+BO_ 2365315098 J1939_DCDC1T_DCDC: 8 DCDC
+ SG_ DCDC_PwrElectcT : 16|8@1+ (1,-40) [-40|210] "�C" VCU
+ SG_ DCDC_CooltOutT : 32|8@1+ (1,-40) [-40|210] "�C"  VCU
+ SG_ DCDC_CooltInT : 24|8@1+ (1,-40) [-40|210] "�C"  VCU
+
+BO_ 2364609306 J1939_DCDC1OS_DCDC: 8 DCDC
+ SG_ DCDC_PwrLimLoSideI : 10|2@1+ (1,0) [0|3] ""  VCU
+ SG_ DCDC_PwrLimHiSideI : 8|2@1+ (1,0) [0|3] ""  VCU
+ SG_ DCDC_OpStsCrc : 56|8@1+ (1,0) [0|255] "count"  VCU
+ SG_ DCDC_OpStsCntr : 52|4@1+ (1,0) [0|15] ""  VCU
+ SG_ DCDC_OperationalSts : 0|4@1+ (1,0) [0|15] ""  VCU
+ SG_ unused_DCDC_PwrLimUndefdReas : 32|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimSLIBattU : 26|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimSLIBattT : 30|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimSLIBattI : 28|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimPwrElectcT : 24|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimLoSideUMin : 16|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimLoSideUMax : 18|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimHiSideUMin : 12|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimHiSideUMax : 14|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimElectcFilT : 22|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_PwrLimCnvrT : 20|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_LoadshedReq : 6|2@1+ (1,0) [0|3] ""  VCU
+ SG_ unused_DCDC_HVILSts : 4|2@1+ (1,0) [0|3] ""  VCU
+
+BO_ 2364609216 J1939_DCDC1C_VCU: 8 VCU
+ SG_ DCDC_HiSideUBoostSp : 24|16@1+ (0.05,0) [0|3212.75] "V"  DCDC
+ SG_ DCDC_OpCmd : 0|4@1+ (1,0) [0|0] ""  DCDC
+ SG_ DCDC_CtrlCrc : 56|8@1+ (1,0) [0|255] "count"  DCDC
+ SG_ DCDC_CtrlCntr : 4|4@1+ (1,0) [0|15] ""  DCDC
+ SG_ DCDC_LoSideUBuckSp : 8|16@1+ (0.01,0) [0|642.55] "V"  DCDC
+ SG_ DCDC_LoSideUBuckDefSp : 40|16@1+ (0.01,0) [0|642.55] "V"  DCDC
+
+BO_ 2633727168 J1939_NM_WAKE: 8 VCU
+ SG_ NM_RMR_Control : 8|1@1+ (1,0) [0|0] ""  DCDC
+ SG_ NM_PNI_Control : 14|1@1+ (1,0) [0|0] ""  DCDC
+ SG_ NM_NodeID_Control : 0|8@1+ (1,0) [0|0] ""  DCDC
+ SG_ NM_CSR_Control : 11|1@1+ (1,0) [0|0] ""  DCDC
+ SG_ NM_AW_Control : 12|1@1+ (1,0) [0|0] ""  DCDC
+
+
+
+CM_ SG_ 2364609562 DCDC_LoSideU "Indicates the measured SLI battery or low side voltage measured at the point of control inside the DC/DC Converter.";
+CM_ SG_ 2364609562 DCDC_LoSideI "Indicates the measured SLI battery or low side current measured at the point of control inside the DC/DC Converter.  The current is positive if the converter is charging the SLI battery from the hybrid battery.";
+CM_ SG_ 2364609562 DCDC_HiSideU "Indicates the measured HVES or high side voltage measured at the point of control inside the DC/DC Converter.";
+CM_ SG_ 2364609562 DCDC_HiSideI "Indicates the measured HVES or high side current measured at the point of control inside the DC/DC Converter.  The current is negative if the converter is charging the SLI battery from the hybrid battery.";
+CM_ SG_ 2365315098 DCDC_PwrElectcT "Parameter indicating the temperature of the DC/DC Converter power electronics components (e.g, switch or heatsink).";
+CM_ SG_ 2365315098 DCDC_CooltOutT "Parameter indicating the temperature of the DC/DC Converter Coolant measured at the output of the converter";
+CM_ SG_ 2365315098 DCDC_CooltInT "Parameter indicating the temperature of the DC/DC Converter Coolant measured at the input of the converter";
+CM_ SG_ 2364609306 DCDC_PwrLimLoSideI "Indicates whether or not output power is being limited due to low side current (see SPN 8586) approaching or exceeding the maximum limit (see SPN 8568).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Availa";
+CM_ SG_ 2364609306 DCDC_PwrLimHiSideI "Indicates whether or not output power is being limited due to high side current (see SPN 8588) approaching or exceeding the maximum limit (see SPN 8565).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Avail";
+CM_ SG_ 2364609306 DCDC_OpStsCrc "The CRC is defined as follows:
+  Length: 8 bits
+  Polynomial: x^8+x^5+x^3+x^2+x+1
+  Initial Value: FFh
+  Input Data Reflection: Not reflected
+  Result Data Reflection: Not reflected
+  XOR value: FFh
+
+SAE makes no claim of the functional safety level";
+CM_ SG_ 2364609306 DCDC_OpStsCntr "The message counter is used to detect situations where the transmitting ECU malfunction repeats the same frame all the time. The receiver of the information may use the counter parameter to detect this situation. The transmitting device will increase the ";
+CM_ SG_ 2364609306 DCDC_OperationalSts "Operating state of the DC/DC Converter
+
+0000b = Disabled 
+0001b = Initialization in process.  The device is powering up.  This process may include both internal checks, as well as system checks being run by the DC/DC Converter.
+0010b = Operational - Stand";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimUndefdReas "Indicates whether or not output power is being limited due to an undefined reason.
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Available";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimSLIBattU "Indicates whether or not output power is being limited due to the SLI battery terminal voltage (see SPN 8589) approaching or exceeding limits (see SPN 8817).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not A";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimSLIBattT "Indicates whether or not output power is being limited due to the SLI battery terminal temperature (see SPN 8591) approaching or exceeding limits (see SPN 8819).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = N";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimSLIBattI "Indicates whether or not output power is being limited due to the SLI battery terminal current (see SPN 8590) approaching or exceeding limits (see SPN 8818).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not A";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimPwrElectcT "Indicates whether or not output power is being limited due to Power Electronics Temperature (see SPN 8594) approaching or exceeding the maximum limit.
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Availabl";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimLoSideUMin "Indicates whether or not output power is being limited due to low side voltage (see SPN 8585) approaching or falling below the minimum limit (see SPN 8566).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Av";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimLoSideUMax "Indicates whether or not output power is being limited due to low side voltage (see SPN 8585) approaching or exceeding the maximum limit (see SPN 8567).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Availa";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimHiSideUMin "Indicates whether or not output power is being limited due to high side voltage (see SPN 8587) approaching or falling below the minimum limit (see SPN 8563).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not A";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimHiSideUMax "Indicates whether or not output power is being limited due to high side voltage (see SPN 8587) approaching or exceeding the maximum limit (see SPN 8564).
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Avail";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimElectcFilT "Indicates whether or not output power is being limited due to Output Electronic Filter Temperature (see SPN 8693) approaching or exceeding the maximum limit.
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not a";
+CM_ SG_ 2364609306 unused_DCDC_PwrLimCnvrT "Indicates whether or not output power is being limited due to Converter Temperature (see SPN 8592) approaching or exceeding the maximum limit.
+
+00b = No power limit for this reason
+01b = Power limited for this reason
+10b = Error
+11b = Not Available";
+CM_ SG_ 2364609306 unused_DCDC_LoadshedReq "The loadshed request is a request to the controlling device to reduce the DC/DC Converter loads.  The Loadshed Requested state is an indication that this DC/DC Converter has a malfunction or is in a limit condition and if the load of the output is not red";
+CM_ SG_ 2364609306 unused_DCDC_HVILSts "High Voltage Interlock Loop (HVIL) state of the DC/DC Converter.
+
+00b = HVIL Closed
+01b = HVIL Open
+10b = Error
+11b = Not Available";
+CM_ SG_ 2364609216 DCDC_HiSideUBoostSp "The set point for regulating the high side voltage during boost mode.";
+CM_ SG_ 2364609216 DCDC_CtrlCrc "The CRC is defined as follows:
+  Length: 8 bits
+  Polynomial: x^8+x^5+x^3+x^2+x+1
+  Initial Value: FFh
+  Input Data Reflection: Not reflected
+  Result Data Reflection: Not reflected
+  XOR value: FFh
+
+SAE makes no claim of the functional safety level";
+CM_ SG_ 2364609216 DCDC_LoSideUBuckSp "The set point for regulating the low side voltage during buck mode.";
+CM_ SG_ 2364609216 DCDC_LoSideUBuckDefSp "The set point for the converter default low side voltage during buck mode.   This setting may be used for when communication has been lost with the controlling device.  When set to Not Available (FFFFh), no default setting is provided and the system shoul";
+CM_ BO_ 2633727168 "Network Management Message from Control Node";
+CM_ SG_ 2633727168 NM_RMR_Control "Repeat Message Request";
+BA_DEF_  "BusSpeed" STRING ;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","NotUsed","NotUsed","NoSigSendType";
+BA_DEF_ SG_  "Fehlerwert" HEX 0 2147483647;
+BA_DEF_ SG_  "NWMWakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigTimeoutValue" INT 0 1000000000;
+BA_DEF_ SG_  "GenSigSwitchedByIgnition" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigMissingSourceValue" HEX 0 4294967295;
+BA_DEF_ SG_  "GenSigFuncType" ENUM  "NoFunction","MsgCounter","CRC-8","XOR","XOR-2","DatedBit","SW-Kl15","CHK","Constant","Protocol","CRC-8-SAE_J1850","CRC-32","DataLength","DataID","MsgCounter16","SDK-Signatur","Cluster";
+BA_DEF_ SG_  "GenSigActiveRepetitions" INT -2147483648 2147483647;
+BA_DEF_ SG_  "GenSigStartValue" INT 0 0;
+BA_DEF_ SG_  "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl","MessageCounter","MessageChecksum";
+BA_DEF_ SG_  "GenSigILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_  "GenSigEVName" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 65535;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NoMsgSendType";
+BA_DEF_ BO_  "NmAsrMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "CANFD_BRS" ENUM  "0","1";
+BA_DEF_ BO_  "MsgType" ENUM  "Application","NM ","NMH","TP2.0","ISO-TP ","BAP","EID","KS";
+BA_DEF_ BO_  "GenMsgPDUConstants" STRING ;
+BA_DEF_ BO_  "GenMsgChkConstant" HEX 0 4095;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 0;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 0;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 0;
+BA_DEF_ BO_  "GenMsgCycleTimeActive" INT 0 0;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ BO_  "NmMessage" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagState" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagRequest" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagResponse" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagFdOnly" ENUM  "No","Yes";
+BA_DEF_ BO_  "DiagConnection" INT 0 65535;
+BA_DEF_ BO_  "TpJ1939VarDlc" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ BO_  "GenMsgRequestable" INT 0 1;
+BA_DEF_ BU_  "NmAsrNodeIdentifier" INT 0 255;
+BA_DEF_ BU_  "NmAsrCanMsgReducedTime" INT 0 65535;
+BA_DEF_ BU_  "NmAsrCanMsgCycleOffset" INT 0 65535;
+BA_DEF_ BU_  "NmAsrNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "TimeQuantaCANFDMax" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaCANFDMin" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaMax" INT 4 257;
+BA_DEF_ BU_  "TimeQuantaMin" INT 4 257;
+BA_DEF_ BU_  "SSPOffsetCANFDMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "SSPOffsetCANFDMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "SamplePointCANFDMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "SamplePointCANFDMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "SyncJumpWidthCANFDMax" FLOAT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthCANFDMin" FLOAT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthMax" INT 0 50;
+BA_DEF_ BU_  "SyncJumpWidthMin" INT 0 50;
+BA_DEF_ BU_  "SamplePointMax" FLOAT 50 99.9;
+BA_DEF_ BU_  "SamplePointMin" FLOAT 50 99.9;
+BA_DEF_ BU_  "ECUVariantGroup" STRING ;
+BA_DEF_ BU_  "ECUVariantDefault" ENUM  "No","Yes";
+BA_DEF_ BU_  "GenNodSleepTime" INT 0 1000000;
+BA_DEF_ BU_  "GenNodAutoGenSnd" ENUM  "No","Yes";
+BA_DEF_ BU_  "GenNodAutoGenDsp" ENUM  "No","Yes";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ILUsed" ENUM  "No","Yes";
+BA_DEF_ BU_  "DiagStationAddress" HEX 0 255;
+BA_DEF_ BU_  "NmCAN" INT 0 2;
+BA_DEF_ BU_  "NmNode" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_  "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_  "NmJ1939System" INT 0 127;
+BA_DEF_ BU_  "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_  "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_  "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939ECUInstance" INT 0 3;
+BA_DEF_ BU_  "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_  "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_  "NmAsrWaitBusSleepTime" INT 0 65535;
+BA_DEF_  "NmAsrTimeoutTime" INT 0 65535;
+BA_DEF_  "NmAsrRepeatMessageTime" INT 0 65535;
+BA_DEF_  "NmAsrCanMsgCycleTime" INT 0 65535;
+BA_DEF_  "BaudrateCANFD" INT 1 16000000;
+BA_DEF_  "GenNWMTalkNM" STRING ;
+BA_DEF_  "GenNWMSleepTime" INT 0 1000000;
+BA_DEF_  "GenNWMGotoMode_BusSleep" STRING ;
+BA_DEF_  "GenNWMGotoMode_Awake" STRING ;
+BA_DEF_  "GenNWMApCanWakeUp" STRING ;
+BA_DEF_  "GenNWMApCanSleep" STRING ;
+BA_DEF_  "GenNWMApCanOn" STRING ;
+BA_DEF_  "GenNWMApCanOff" STRING ;
+BA_DEF_  "GenNWMApCanNormal" STRING ;
+BA_DEF_  "GenNWMApBusSleep" STRING ;
+BA_DEF_  "NmAsrBaseAddress" HEX 1280 1343;
+BA_DEF_  "NmAsrMessageCount" INT 0 255;
+BA_DEF_  "NmType" STRING ;
+BA_DEF_  "DBName" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "SAE_J1939_DA_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_81_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_75_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_21_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_73_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_71_SpecVersion" STRING ;
+BA_DEF_  "Baudrate" INT 1 1000000;
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","StandardCAN_FD","ExtendedCAN_FD","J1939PG";
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_ BU_  "NmStationAddress" HEX 0 255;
+BA_DEF_  "DBC_ReleaseVersion" STRING ;
+BA_DEF_  "MDC_ReleaseVersion" STRING ;
+BA_DEF_  "Manufacturer" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_DEF_  "BusSpeed" "500k";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "Fehlerwert" 0;
+BA_DEF_DEF_  "NWMWakeupAllowed" "No";
+BA_DEF_DEF_  "GenSigTimeoutValue" 0;
+BA_DEF_DEF_  "GenSigSwitchedByIgnition" "No";
+BA_DEF_DEF_  "GenSigMissingSourceValue" 0;
+BA_DEF_DEF_  "GenSigFuncType" "NoFunction";
+BA_DEF_DEF_  "GenSigActiveRepetitions" 0;
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "SigType" "Default";
+BA_DEF_DEF_  "GenSigILSupport" "Yes";
+BA_DEF_DEF_  "GenSigEVName" "Env@Nodename_@Signame";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_  "NmAsrMessage" "No";
+BA_DEF_DEF_  "CANFD_BRS" "1";
+BA_DEF_DEF_  "MsgType" "Application";
+BA_DEF_DEF_  "GenMsgPDUConstants" "";
+BA_DEF_DEF_  "GenMsgChkConstant" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeActive" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NmMessage" "No";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "DiagState" "No";
+BA_DEF_DEF_  "DiagRequest" "No";
+BA_DEF_DEF_  "DiagResponse" "No";
+BA_DEF_DEF_  "DiagFdOnly" "No";
+BA_DEF_DEF_  "DiagConnection" 0;
+BA_DEF_DEF_  "TpJ1939VarDlc" "No";
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenMsgRequestable" 1;
+BA_DEF_DEF_  "NmAsrNodeIdentifier" 0;
+BA_DEF_DEF_  "NmAsrCanMsgReducedTime" 500;
+BA_DEF_DEF_  "NmAsrCanMsgCycleOffset" 100;
+BA_DEF_DEF_  "NmAsrNode" "Yes";
+BA_DEF_DEF_  "TimeQuantaCANFDMax" 40;
+BA_DEF_DEF_  "TimeQuantaCANFDMin" 40;
+BA_DEF_DEF_  "TimeQuantaMax" 160;
+BA_DEF_DEF_  "TimeQuantaMin" 160;
+BA_DEF_DEF_  "SSPOffsetCANFDMax" 75;
+BA_DEF_DEF_  "SSPOffsetCANFDMin" 75;
+BA_DEF_DEF_  "SamplePointCANFDMax" 75;
+BA_DEF_DEF_  "SamplePointCANFDMin" 75;
+BA_DEF_DEF_  "SyncJumpWidthCANFDMax" 50;
+BA_DEF_DEF_  "SyncJumpWidthCANFDMin" 50;
+BA_DEF_DEF_  "SyncJumpWidthMax" 50;
+BA_DEF_DEF_  "SyncJumpWidthMin" 50;
+BA_DEF_DEF_  "SamplePointMax" 75;
+BA_DEF_DEF_  "SamplePointMin" 75;
+BA_DEF_DEF_  "ECUVariantGroup" "";
+BA_DEF_DEF_  "ECUVariantDefault" "Yes";
+BA_DEF_DEF_  "GenNodSleepTime" 0;
+BA_DEF_DEF_  "GenNodAutoGenSnd" "Yes";
+BA_DEF_DEF_  "GenNodAutoGenDsp" "Yes";
+BA_DEF_DEF_  "NodeLayerModules" "oseknm01.dll,osek_tp.dll,CANoeILNLVector.dll";
+BA_DEF_DEF_  "ILUsed" "Yes";
+BA_DEF_DEF_  "DiagStationAddress" 0;
+BA_DEF_DEF_  "NmCAN" 0;
+BA_DEF_DEF_  "NmNode" "No";
+BA_DEF_DEF_  "NmJ1939AAC" 0;
+BA_DEF_DEF_  "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_  "NmJ1939System" 0;
+BA_DEF_DEF_  "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_  "NmJ1939Function" 0;
+BA_DEF_DEF_  "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_  "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_  "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_  "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "NmAsrWaitBusSleepTime" 4000;
+BA_DEF_DEF_  "NmAsrTimeoutTime" 3000;
+BA_DEF_DEF_  "NmAsrRepeatMessageTime" 1000;
+BA_DEF_DEF_  "NmAsrCanMsgCycleTime" 1000;
+BA_DEF_DEF_  "BaudrateCANFD" 2000000;
+BA_DEF_DEF_  "GenNWMTalkNM" "";
+BA_DEF_DEF_  "GenNWMSleepTime" 0;
+BA_DEF_DEF_  "GenNWMGotoMode_BusSleep" "";
+BA_DEF_DEF_  "GenNWMGotoMode_Awake" "";
+BA_DEF_DEF_  "GenNWMApCanWakeUp" "";
+BA_DEF_DEF_  "GenNWMApCanSleep" "";
+BA_DEF_DEF_  "GenNWMApCanOn" "";
+BA_DEF_DEF_  "GenNWMApCanOff" "";
+BA_DEF_DEF_  "GenNWMApCanNormal" "";
+BA_DEF_DEF_  "GenNWMApBusSleep" "";
+BA_DEF_DEF_  "NmAsrBaseAddress" 1280;
+BA_DEF_DEF_  "NmAsrMessageCount" 64;
+BA_DEF_DEF_  "NmType" "NmAsr";
+BA_DEF_DEF_  "DBName" "";
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "SAE_J1939_DA_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_81_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_75_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_21_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_73_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_71_SpecVersion" "";
+BA_DEF_DEF_  "Baudrate" 500000;
+BA_DEF_DEF_  "VFrameFormat" "";
+BA_DEF_DEF_  "DOORS_ID" "";
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "DBC_ReleaseVersion" "B0X.XDX";
+BA_DEF_DEF_  "MDC_ReleaseVersion" "V0.0.0";
+BA_DEF_DEF_  "Manufacturer" "Oen";
+BA_DEF_DEF_  "ProtocolType" "";
+BA_ "MDC_ReleaseVersion" "";
+BA_ "Manufacturer" "Open";
+BA_ "ProtocolType" "J1939";
+BA_ "DBC_ReleaseVersion" "V1.2.0";
+BA_ "BusType" "CAN";
+BA_ "DBName" "J1939";
+BA_ "NmStationAddress" BU_ DCDC 26;
+BA_ "NmJ1939Function" BU_ DCDC 31;
+BA_ "NmJ1939Function" BU_ VCU 30;
+BA_ "NmStationAddress" BU_ VCU 192;
+BA_ "GenMsgRequestable" BO_ 2364609562 0;
+BA_ "GenMsgSendType" BO_ 2364609562 8;
+BA_ "VFrameFormat" BO_ 2364609562 3;
+BA_ "GenMsgRequestable" BO_ 2365315098 0;
+BA_ "GenMsgSendType" BO_ 2365315098 8;
+BA_ "VFrameFormat" BO_ 2365315098 3;
+BA_ "GenMsgRequestable" BO_ 2364609306 0;
+BA_ "CANFD_BRS" BO_ 2364609306 0;
+BA_ "GenMsgSendType" BO_ 2364609306 8;
+BA_ "VFrameFormat" BO_ 2364609306 3;
+BA_ "GenMsgCycleTime" BO_ 2364609216 100;
+BA_ "GenMsgRequestable" BO_ 2364609216 0;
+BA_ "VFrameFormat" BO_ 2364609216 3;
+BA_ "GenMsgCycleTime" BO_ 2633727168 1000;
+BA_ "GenMsgRequestable" BO_ 2633727168 0;
+BA_ "MsgType" BO_ 2633727168 1;
+BA_ "NmAsrMessage" BO_ 2633727168 1;
+BA_ "VFrameFormat" BO_ 2633727168 3;
+BA_ "SPN" SG_ 2364609562 DCDC_LoSideU 8585;
+BA_ "GenSigSendType" SG_ 2364609562 DCDC_LoSideU 1;
+BA_ "SPN" SG_ 2364609562 DCDC_LoSideI 8586;
+BA_ "GenSigSendType" SG_ 2364609562 DCDC_LoSideI 1;
+BA_ "SPN" SG_ 2364609562 DCDC_HiSideU 8587;
+BA_ "GenSigSendType" SG_ 2364609562 DCDC_HiSideU 1;
+BA_ "SPN" SG_ 2364609562 DCDC_HiSideI 8588;
+BA_ "GenSigSendType" SG_ 2364609562 DCDC_HiSideI 1;
+BA_ "GenSigStartValue" SG_ 2365315098 DCDC_PwrElectcT 0;
+BA_ "SPN" SG_ 2365315098 DCDC_PwrElectcT 8594;
+BA_ "GenSigSendType" SG_ 2365315098 DCDC_PwrElectcT 1;
+BA_ "GenSigSendType" SG_ 2365315098 DCDC_CooltOutT 1;
+BA_ "SPN" SG_ 2365315098 DCDC_CooltOutT 8823;
+BA_ "SPN" SG_ 2365315098 DCDC_CooltInT 8822;
+BA_ "GenSigSendType" SG_ 2365315098 DCDC_CooltInT 1;
+BA_ "SPN" SG_ 2364609306 DCDC_PwrLimLoSideI 8573;
+BA_ "GenSigSendType" SG_ 2364609306 DCDC_PwrLimLoSideI 1;
+BA_ "SPN" SG_ 2364609306 DCDC_PwrLimHiSideI 8572;
+BA_ "SPN" SG_ 2364609306 DCDC_OpStsCrc 7958;
+BA_ "GenSigSendType" SG_ 2364609306 DCDC_OpStsCrc 1;
+BA_ "SigType" SG_ 2364609306 DCDC_OpStsCrc 12;
+BA_ "SPN" SG_ 2364609306 DCDC_OpStsCntr 7957;
+BA_ "GenSigSendType" SG_ 2364609306 DCDC_OpStsCntr 1;
+BA_ "SigType" SG_ 2364609306 DCDC_OpStsCntr 11;
+BA_ "SPN" SG_ 2364609306 DCDC_OperationalSts 8569;
+BA_ "GenSigSendType" SG_ 2364609306 DCDC_OperationalSts 1;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimUndefdReas 8584;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimSLIBattU 8581;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimSLIBattT 8582;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimSLIBattI 8583;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimPwrElectcT 8580;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimLoSideUMin 8576;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimLoSideUMax 8577;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimHiSideUMin 8574;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimHiSideUMax 8575;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimElectcFilT 8579;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_PwrLimCnvrT 8578;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_LoadshedReq 8571;
+BA_ "SPN" SG_ 2364609306 unused_DCDC_HVILSts 8570;
+BA_ "SPN" SG_ 2364609216 DCDC_HiSideUBoostSp 8562;
+BA_ "SPN" SG_ 2364609216 DCDC_CtrlCrc 7956;
+BA_ "SigType" SG_ 2364609216 DCDC_CtrlCrc 12;
+BA_ "SigType" SG_ 2364609216 DCDC_CtrlCntr 11;
+BA_ "SPN" SG_ 2364609216 DCDC_LoSideUBuckSp 8561;
+BA_ "SPN" SG_ 2364609216 DCDC_LoSideUBuckDefSp 9515;
+BA_ "GenSigSendType" SG_ 2633727168 NM_RMR_Control 7;
+BA_ "GenSigSendType" SG_ 2633727168 NM_PNI_Control 7;
+BA_ "GenSigSendType" SG_ 2633727168 NM_NodeID_Control 7;
+BA_ "GenSigSendType" SG_ 2633727168 NM_CSR_Control 7;
+BA_ "GenSigSendType" SG_ 2633727168 NM_AW_Control 7;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_HiSideUBoostSp 0;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_CtrlCrc 0;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_CtrlCntr 0;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_LoSideUBuckSp 0;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_LoSideUBuckDefSp 0;
+BA_ "GenSigStartValue" SG_ 2364609216 DCDC_OpCmd 0;
+VAL_ 2364609306 DCDC_PwrLimLoSideI 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 DCDC_PwrLimHiSideI 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 DCDC_OperationalSts 0 "unused_Disabled" 1 "Initialization" 2 "Standby" 3 "Buck_mode" 4 "Boost_mode" 5 "unused_powerDown" 6 "unused_DisabledMalfunction" 7 "Pre-charge" 8 "Active_Discharge" 9 "Reserved" 10 "Reserved" 11 "Reserved" 12 "Reserved" 13 "unused_ManufacturerAssignable" 14 "Error" 15 "Not Available" ;
+VAL_ 2364609306 unused_DCDC_PwrLimUndefdReas 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimSLIBattU 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimSLIBattT 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimSLIBattI 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimPwrElectcT 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimLoSideUMin 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimLoSideUMax 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimHiSideUMin 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimHiSideUMax 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimElectcFilT 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_PwrLimCnvrT 0 "NoLimit" 1 "limited" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609306 unused_DCDC_LoadshedReq 0 "NoLoadshedRequested" 1 "LoadshedRequested" 2 "ShutdownImminent" 3 "NoAction" ;
+VAL_ 2364609306 unused_DCDC_HVILSts 0 "Closed" 1 "Open" 2 "Error" 3 "NotAvailable" ;
+VAL_ 2364609216 DCDC_OpCmd 0 "unused_Disabled" 1 "Standby" 2 "Buck_mode" 3 "Boost_mode" 4 "unused_powerDown" 5 "Pre-charge" 6 "Active_Discharge" 7 "Reserved" 8 "Reserved" 9 "Reserved" 10 "Reserved" 11 "Reserved" 12 "Reserved" 13 "Reserved" 14 "Reserved" 15 "No Action" ;
+VAL_ 2633727168 NM_RMR_Control 1 "Repeat Msg State requested" 0 "Repeat Msg State not requested" ;
+VAL_ 2633727168 NM_PNI_Control 1 "NM PDU with partial network info" 0 "NM PDU no partial network info" ;
+VAL_ 2633727168 NM_CSR_Control 1 "Ready" 0 "Not Ready" ;
+VAL_ 2633727168 NM_AW_Control 1 "active wakeup" 0 "passive wakeup" ;
+SIG_GROUP_ 2364609562 DCDC1VC_DCDC 1 : DCDC_LoSideU DCDC_LoSideI DCDC_HiSideU DCDC_HiSideI;
+SIG_GROUP_ 2364609306 DCDC1OS_DCDC 1 : DCDC_PwrLimLoSideI DCDC_OpStsCrc DCDC_OpStsCntr DCDC_OperationalSts;
+SIG_GROUP_ 2364609306 DCDC1OS_DCDC_unused 1 : DCDC_PwrLimHiSideI unused_DCDC_PwrLimUndefdReas unused_DCDC_PwrLimSLIBattU unused_DCDC_PwrLimSLIBattT unused_DCDC_PwrLimSLIBattI unused_DCDC_PwrLimPwrElectcT unused_DCDC_PwrLimLoSideUMin unused_DCDC_PwrLimLoSideUMax unused_DCDC_PwrLimHiSideUMin unused_DCDC_PwrLimHiSideUMax unused_DCDC_PwrLimElectcFilT unused_DCDC_PwrLimCnvrT unused_DCDC_LoadshedReq unused_DCDC_HVILSts;
+SIG_GROUP_ 2364609216 DCDC1C_VCU 1 : DCDC_OpCmd DCDC_CtrlCrc DCDC_CtrlCntr DCDC_LoSideUBuckSp;
+
