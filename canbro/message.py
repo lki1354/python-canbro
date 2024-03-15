@@ -184,7 +184,7 @@ class MessageTxCycle(MessageTx):
             if self._periodic_task is not None:
                 self._periodic_task.modify_data(self._state)
             else:
-                logging.WARNING("no periodic task {}".format(msg) )
+                logging.WARNING("!!!no periodic task called from _update_calc_E2E!!!!" )
         
 
     def _update_can_message(self,value) -> None:
