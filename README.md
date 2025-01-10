@@ -45,7 +45,7 @@ vcu.DEM._signal_operation_mode.notify(2)
 
 ## License
 
-canbro is licensed under the MIT License. See the LICENSE file for more information.
+canbro is licensed under the LGPL-3.0 license. See the LICENSE file for more information.
 
 ## Author
 
